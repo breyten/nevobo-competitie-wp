@@ -168,18 +168,7 @@ class NevCom {
         $result->code_link, $result->home, $result->away
       );
       $output[] = '<td>'. $result->location .'</td>';
-      if (empty($result->ref_name)) {
-        $output[] = '<td><a href="#" class="game-register">inschrijven voor de wedstrijd &gt;</a></td>';
-      } else {
-        if (current_user_can('delete_others_posts')) {
-          $additional = '<a class="game-clear" href="'. home_url() .'/wp-admin/admin-ajax.php?action=nevcom_clear_game&id='. $result->id .'" class="close" aria-label="Close"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a>';
-          $name_class = 'game-register';
-        } else {
-          $additional = '';
-          $name_class = 'game-taken';
-        }
-        $output[] = sprintf('<td><a href="#" class="%s">%s (%s)</a> %s</td>', $name_class, $result->ref_name, $result->ref_team, $additional);
-      }
+      # FIXME: something with results here ...
       $output[] = '</tr>';
     }
 
