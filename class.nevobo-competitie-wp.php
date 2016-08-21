@@ -80,10 +80,9 @@ class NevCom {
       away VARCHAR(255),
       location VARCHAR(255),
       court VARCHAR(10),
-      ref_team VARCHAR(255),
-      ref_name VARCHAR(255),
-      ref_code VARCHAR(32),
-      ref_posted_at datetime,
+      sets_home INT,
+      sets_away INT,
+      sets_details TEXT,
       UNIQUE KEY id (id),
       PRIMARY KEY pk (code)
     ) $charset_collate;";
@@ -122,76 +121,11 @@ class NevCom {
   public static function inject_styles_and_scripts() {
     $output = '
     <style type="text/css">
-    .game-taken {
-      color: black;
-      text-decoration: none;
-    }
-    .game-form {
-      display: none;
-    }
-    .game-form td {
-      vertical-align: middle;
-    }
-    .game-form .btn {
-      margin-top: 0;
-    }
     </style>';
 
     $output .= '
     <script type="text/javascript">
     jQuery(document).ready(function () {
-      jQuery(".game-register").on("click", function (e) {
-        var $form = jQuery(this).parent().parent().next();
-        $form.toggle("slow");
-        $form.find("input.form-control:first").focus();
-        return false;
-      });
-
-      jQuery(".game-clear").on("click", function (e) {
-        var $link = jQuery(this);
-
-        jQuery.ajax({
-          type:"GET",
-          url: $link.attr("href"),
-          success:function(data){
-            $link.parent().find(".alert").remove();
-            $link.parent().text("").prepend(jQuery(data));
-            if (data.indexOf("alert alert-success") >= 0) {
-              $link.hide();
-            }
-          },
-          error:function(xhr,ts,msg){
-            $link.parent().find(".alert").remove();
-            $link.parent().prepend(jQuery(data));
-          }
-        });
-
-        return false;
-
-      });
-
-      jQuery(".game-form form").submit(function(e) {
-        var $form = jQuery(this);
-
-        jQuery.ajax({
-          type:"POST",
-          url: "'. home_url() .'/wp-admin/admin-ajax.php",
-          data: $form.serialize(),
-          success:function(data){
-            $form.parent().find(".alert").remove();
-            $form.parent().prepend(jQuery(data));
-            if (data.indexOf("alert alert-success") >= 0) {
-              $form.hide();
-            }
-          },
-          error:function(xhr,ts,msg){
-            $form.parent().find(".alert").remove();
-            $form.parent().prepend(jQuery(data));
-          }
-        });
-
-        return false;
-      });
     });
     </script>';
 
@@ -247,88 +181,11 @@ class NevCom {
         $output[] = sprintf('<td><a href="#" class="%s">%s (%s)</a> %s</td>', $name_class, $result->ref_name, $result->ref_team, $additional);
       }
       $output[] = '</tr>';
-      $output[] = '<tr class="game-form"><td colspan="4">
-      <form class="form-inline">
-      <input type="hidden" name="id" value="'. $result->id .'" />
-      <input type="hidden" name="action" value="nevcom_submit_form"/>
-      <div class="form-group">
-      <label class="sr-only" for="naam">Naam</label>
-      <input type="text" class="form-control" name="naam" placeholder="Naam" value="'. $result->ref_name .'">
-      </div>
-      <div class="form-group">
-      <label class="sr-only" for="team">Team</label>
-      <input type="text" class="form-control" name="team" placeholder="Team" value="'. $result->ref_team .'">
-      </div>
-      <div class="form-group">
-      <label class="sr-only" for="code">Relatiecode</label>
-      <input type="text" class="form-control" name="code" placeholder="Relatiecode" value="'. $result->ref_code .'">
-      </div>
-      <button type="submit" class="btn btn-primary btn-sm">inschrijven</button>
-      </form>
-      </td></tr>';
     }
 
     $output[] = '</table>';
 
     return str_replace('[nevcom]', implode("\n", $output), $content);
-  }
-
-  public static function clear_game() {
-    // create the table
-    global $wpdb;
-
-    $table_name = self::_table();
-
-    if ($wpdb->update(
-      $table_name,
-      array(
-        'ref_team' => null,
-        'ref_name' => null,
-        'ref_code' => null,
-        'ref_posted_at' => null,
-      ),
-      array(
-        'id' => $_GET['id'],
-      )
-    ) === false) {
-      echo "<div class=\"alert alert-danger\" role=\"alert\">Er ging iets fout bij het vrijgeven</div>";
-    } else {
-      echo "<div class=\"alert alert-success\" role=\"alert\">De wedstrijd is succesvol vijgegeven</div>";
-    }
-
-    die();
-
-  }
-
-  public static function submit_form() {
-    // create the table
-    global $wpdb;
-
-    $table_name = self::_table();
-
-    if (trim($_POST['team'] . $_POST['naam']) == '') {
-      echo "<div class=\"alert alert-danger\" role=\"alert\">Naam en team moeten ingevuld zijn</div>";
-      die();
-    }
-
-    if ($wpdb->update(
-      $table_name,
-      array(
-        'ref_team' => $_POST['team'],
-        'ref_name' => $_POST['naam'],
-        'ref_code' => $_POST['code'],
-        'ref_posted_at' => current_time( 'mysql' ),
-      ),
-      array(
-        'id' => $_POST['id'],
-      )
-    ) === false) {
-      echo "<div class=\"alert alert-danger\" role=\"alert\">Er ging iets fout bij het opslaan</div>";
-    } else {
-      echo "<div class=\"alert alert-success\" role=\"alert\">Succesvol opgeslagen</div>";
-    }
-
-    die();
   }
 
   private static function _get_teams($item) {
@@ -342,11 +199,8 @@ class NevCom {
     return str_replace('Speellocatie: ', '', $info[3]);
   }
 
-  private static function _can_ref_game($home, $away, $item, $club_name) {
-    $is_home_game = preg_match('/'. $club_name .' (D|H)S\s?[\d]+$/', $home);
-    $is_lower_division = preg_match('/^3000\s*(D|H)\d[A-Z]\d?/', self::_get_code($item));
-    return ($is_home_game && $is_lower_division);
-    //return true;
+  private static function _can_include_game($home, $away, $item, $club_name) {
+    return true;
   }
 
   private static function _get_code($item) {
@@ -378,7 +232,7 @@ class NevCom {
 
     foreach($feed->get_items() as $key=>$item) {
       list ($home, $away) = self::_get_teams($item);
-      if (self::_can_ref_game($home, $away, $item, $club_name)) {
+      if (self::_can_include_game($home, $away, $item, $club_name)) {
         $code = self::_get_code($item);
 
         $existing = $wpdb->get_row(
