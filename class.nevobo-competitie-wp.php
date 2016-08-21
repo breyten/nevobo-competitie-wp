@@ -121,6 +121,25 @@ class NevCom {
   public static function inject_styles_and_scripts() {
     $output = '
     <style type="text/css">
+    .game-header {
+      border-bottom: 1px solid #e7ecf1;
+    }
+    .game-header h3 {
+      margin-bottom: 20px;
+    }
+    .game-info {
+      border-bottom: 1px solid #e7ecf1;
+    }
+
+    .game-info div, .game-header div {
+      padding-bottom: 0 !important;
+    }
+
+    @media only screen and (max-width: 480px) {
+      .game-info div {
+        text-align: center;
+      }
+    }
     </style>';
 
     $output .= '
@@ -144,7 +163,7 @@ class NevCom {
     );
 
     $output = array();
-    $output[] = '<table id="games-table" class="table table-condensed">';
+    $output[] = '<div id="games-table">';
 
     $old_date = '';
     $dtza = new DateTimeZone("Europe/Amsterdam");
@@ -158,21 +177,21 @@ class NevCom {
       $game_time->add(new DateInterval('PT'. $offset .'S'));
       if ($date != $old_date) {
         $i18n_date = date_i18n('l j F Y', strtotime($date));
-        $output[] = '<tr><td colspan="4"><h3>'. $i18n_date .'</h3></td></tr>';
+        $output[] = '<div class="row game-header"><div class="col-xs-12"><h3>'. $i18n_date .'</h3></div></div>';
         $old_date = $date;
       }
-      $output[] = '<tr class="game-info">';
-      $output[] = '<td>'. $game_time->format('H:i') .'</td>';
+      $output[] = '<div class="row game-info">';
+      $output[] = '<div class="col-xs-12 col-md-2 col-lg-1">'. $game_time->format('H:i') .'</div>';
       $output[] = sprintf(
-        '<td><a href="%s" target="_blank">%s - %s</a></td>',
+        '<div class="col-xs-12 col-md-6 col-lg-7"><a href="%s" target="_blank">%s - %s</a></div>',
         $result->code_link, $result->home, $result->away
       );
-      $output[] = '<td>'. $result->location .'</td>';
+      $output[] = '<div class="col-xs-12 col-md-4 col-lg-4">'. $result->location .'</div>';
       # FIXME: something with results here ...
-      $output[] = '</tr>';
+      $output[] = '</div>';
     }
 
-    $output[] = '</table>';
+    $output[] = '</div>';
 
     return str_replace('[nevcom]', implode("\n", $output), $content);
   }
