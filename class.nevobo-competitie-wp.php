@@ -16,7 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-class USRefs {
+class NevCom {
   private static $initiated = false;
   private static $following_clubs = array(
     "CKL7K12" => "US",
@@ -35,21 +35,21 @@ class USRefs {
     self::$initiated = true;
 
     //Hook our function , wi_create_backup(), into the action wi_create_daily_backup
-    add_action( 'usrefs_get_program', array( 'USRefs', 'update_program' ) );
-    add_action( 'wp_head', array('USRefs', 'inject_styles_and_scripts' ) );
+    add_action( 'nevcom_get_program', array( 'NevCom', 'update_program' ) );
+    add_action( 'wp_head', array('NevCom', 'inject_styles_and_scripts' ) );
     // filters
-    add_filter( 'the_content', array( 'USRefs', 'show_games' ) );
+    add_filter( 'the_content', array( 'NevCom', 'show_games' ) );
     // ajax form submission
-    add_action('wp_ajax_usrefs_submit_form', array( 'USRefs', 'submit_form' ) );
-    add_action('wp_ajax_nopriv_usrefs_submit_form', array( 'USRefs', 'submit_form' ) );
-    add_action('wp_ajax_usrefs_clear_game', array( 'USRefs', 'clear_game' ) );
+    add_action('wp_ajax_nevcom_submit_form', array( 'NevCom', 'submit_form' ) );
+    add_action('wp_ajax_nopriv_nevcom_submit_form', array( 'NevCom', 'submit_form' ) );
+    add_action('wp_ajax_nevcom_clear_game', array( 'NevCom', 'clear_game' ) );
   }
 
   private static function _table() {
     // create the table
     global $wpdb;
 
-    return $wpdb->prefix . 'usrefs';
+    return $wpdb->prefix . 'nevcom';
 
   }
 
@@ -91,13 +91,13 @@ class USRefs {
     require_once( ABSPATH .'wp-admin/includes/upgrade.php' );
     dbDelta( $sql );
 
-    add_option( 'usrefs_db_version', USREF__DB_VERSION );
+    add_option( 'nevcom_db_version', USREF__DB_VERSION );
 
     // add the cron job
-    $timestamp = wp_next_scheduled( 'usrefs_get_program' );
+    $timestamp = wp_next_scheduled( 'nevcom_get_program' );
 
     if( $timestamp == false ){
-      wp_schedule_event( time(), 'hourly', 'usrefs_get_program' );
+      wp_schedule_event( time(), 'hourly', 'nevcom_get_program' );
     }
 
   }
@@ -116,7 +116,7 @@ class USRefs {
 
     //$wpdb->get_var( $sql );
 
-    wp_clear_scheduled_hook( 'usrefs_get_program' );
+    wp_clear_scheduled_hook( 'nevcom_get_program' );
   }
 
   public static function inject_styles_and_scripts() {
@@ -238,7 +238,7 @@ class USRefs {
         $output[] = '<td><a href="#" class="game-register">inschrijven voor de wedstrijd &gt;</a></td>';
       } else {
         if (current_user_can('delete_others_posts')) {
-          $additional = '<a class="game-clear" href="'. home_url() .'/wp-admin/admin-ajax.php?action=usrefs_clear_game&id='. $result->id .'" class="close" aria-label="Close"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a>';
+          $additional = '<a class="game-clear" href="'. home_url() .'/wp-admin/admin-ajax.php?action=nevcom_clear_game&id='. $result->id .'" class="close" aria-label="Close"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a>';
           $name_class = 'game-register';
         } else {
           $additional = '';
@@ -250,7 +250,7 @@ class USRefs {
       $output[] = '<tr class="game-form"><td colspan="4">
       <form class="form-inline">
       <input type="hidden" name="id" value="'. $result->id .'" />
-      <input type="hidden" name="action" value="usrefs_submit_form"/>
+      <input type="hidden" name="action" value="nevcom_submit_form"/>
       <div class="form-group">
       <label class="sr-only" for="naam">Naam</label>
       <input type="text" class="form-control" name="naam" placeholder="Naam" value="'. $result->ref_name .'">
@@ -270,7 +270,7 @@ class USRefs {
 
     $output[] = '</table>';
 
-    return str_replace('[usrefs]', implode("\n", $output), $content);
+    return str_replace('[nevcom]', implode("\n", $output), $content);
   }
 
   public static function clear_game() {

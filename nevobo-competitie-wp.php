@@ -1,8 +1,8 @@
 <?php
 /**
-* Plugin Name: US Amsterdam Referee System
-* Plugin URI: http://www.usvolleybal.nl/competitie/scheidsrechters-leveren/
-* Description: Allows members from US to assign themselves to a referee match
+* Plugin Name: Nevobo Competitie
+* Plugin URI: http://www.volleybal.nl/competitie/
+* Description: Allows to view data from dutch volleyball competition
 * Version: 0.0.1
 * Author: Breyten Ernsting
 * Author URI: http://yerb.net/
@@ -31,14 +31,14 @@ if ( !function_exists( 'add_action' ) ) {
   exit;
 }
 
-define( 'USREFS__PLUGIN_URL', plugin_dir_url( __FILE__ ) );
-define( 'USREFS__PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
-define( 'USREF__DB_VERSION', 1.0);
+define( 'NEVCOM__PLUGIN_URL', plugin_dir_url( __FILE__ ) );
+define( 'NEVCOM__PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
+define( 'NEVCOM__DB_VERSION', 1.0);
 
-require_once( USREFS__PLUGIN_DIR . 'class.usrefs.php' );
-require_once( USREFS__PLUGIN_DIR . 'class.simplepie.php' );
+require_once( NEVCOM__PLUGIN_DIR . 'class.nevobo-competitie-wp.php' );
+require_once( NEVCOM__PLUGIN_DIR . 'class.simplepie.php' );
 
-register_activation_hook( __FILE__, array( 'USRefs', 'plugin_activation' ) );
-register_deactivation_hook( __FILE__, array( 'USRefs', 'plugin_deactivation' ) );
+register_activation_hook( __FILE__, array( 'NevCom', 'plugin_activation' ) );
+register_deactivation_hook( __FILE__, array( 'NevCom', 'plugin_deactivation' ) );
 
-add_action( 'init', array( 'USRefs', 'init' ) );
+add_action( 'init', array( 'NevCom', 'init' ) );
