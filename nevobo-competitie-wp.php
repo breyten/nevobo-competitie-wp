@@ -36,8 +36,9 @@ define( 'NEVCOM__PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'NEVCOM__DB_VERSION', 1.0);
 
 require_once( NEVCOM__PLUGIN_DIR . 'class.nevobo-competitie-wp.php' );
-require_once( NEVCOM__PLUGIN_DIR . 'class.simplepie.php' );
-
+if (!defined('SIMPLEPIE_NAME')) {
+  require_once( NEVCOM__PLUGIN_DIR . 'class.simplepie.php' );
+}
 register_activation_hook( __FILE__, array( 'NevCom', 'plugin_activation' ) );
 register_deactivation_hook( __FILE__, array( 'NevCom', 'plugin_deactivation' ) );
 
