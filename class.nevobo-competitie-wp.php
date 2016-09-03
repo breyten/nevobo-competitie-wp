@@ -83,6 +83,7 @@ class NevCom {
       sets_home INT,
       sets_away INT,
       sets_details TEXT,
+      updated_at INT,
       UNIQUE KEY id (id),
       PRIMARY KEY pk (code)
     ) $charset_collate;";
@@ -129,15 +130,40 @@ class NevCom {
     }
     .game-info {
       border-bottom: 1px solid #e7ecf1;
+      display: flex;
+      align-items: center;
     }
-
     .game-info div, .game-header div {
       padding-bottom: 0 !important;
     }
-
-    @media only screen and (max-width: 480px) {
+    /* Medium Devices, Desktops */
+    @media only screen and (max-width : 992px) {
+      .game-info {
+        flex-direction: column;
+        justify-content: center;
+      }
       .game-info div {
         text-align: center;
+      }
+    }
+    /* Small Devices, Tablets */
+    @media only screen and (max-width : 768px) {
+      .game-info {
+        flex-direction: row;
+      }
+    }
+    @media only screen and (max-width: 480px) {
+      .game-info {
+        flex-direction: column;
+        justify-content: center;
+      }
+      .game-info div {
+        text-align: center;
+      }
+    }
+    @media only screen and (min-width : 993px) {
+      .game-info {
+        flex-direction: row;
       }
     }
     </style>';
@@ -263,7 +289,8 @@ class NevCom {
               'home' => $home,
               'away' => $away,
               'location' => self::_get_location($item),
-              'court' => 'Onbekend'
+              'court' => 'Onbekend',
+              'updated_at' => $item->get_date( 'U' )
             ),
             array(
               'id' => $existing->id,
@@ -285,7 +312,8 @@ class NevCom {
               'home' => $home,
               'away' => $away,
               'location' => self::_get_location($item),
-              'court' => 'Onbekend'
+              'court' => 'Onbekend',
+              'updated_at' => $item->get_date( 'U' )
             )
           );
         }
