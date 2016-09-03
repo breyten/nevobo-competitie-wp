@@ -207,13 +207,16 @@ class NevCom {
         $old_date = $date;
       }
       $output[] = '<div class="row game-info">';
-      $output[] = '<div class="col-xs-12 col-md-2 col-lg-1">'. $game_time->format('H:i') .'</div>';
+      $output[] = '<div class="col-xs-12 col-md-1 col-lg-1">'. $game_time->format('H:i') .'</div>';
       $output[] = sprintf(
-        '<div class="col-xs-12 col-md-6 col-lg-7"><a href="%s" target="_blank">%s - %s</a></div>',
+        '<div class="col-xs-12 col-md-4 col-lg-5"><a href="%s" target="_blank">%s - %s</a></div>',
         $result->code_link, $result->home, $result->away
       );
       $output[] = '<div class="col-xs-12 col-md-4 col-lg-4">'. $result->location .'</div>';
       # FIXME: something with results here ...
+      $output[] = '<div class="col-xs-12 col-md-3 col-lg-2">';
+      $output[] = $result->court;
+      $output[] = '</div>';
       $output[] = '</div>';
     }
 
