@@ -39,17 +39,13 @@ class NevCom {
     add_action( 'wp_head', array('NevCom', 'inject_styles_and_scripts' ) );
     // filters/shortcodes
     add_shortcode('nevcom', array( 'NevCom', 'show_games' ));
-    // ajax form submission
-    add_action('wp_ajax_nevcom_submit_form', array( 'NevCom', 'submit_form' ) );
-    add_action('wp_ajax_nopriv_nevcom_submit_form', array( 'NevCom', 'submit_form' ) );
-    add_action('wp_ajax_nevcom_clear_game', array( 'NevCom', 'clear_game' ) );
   }
 
-  private static function _table() {
+  private static function _table($basename = "nevcom") {
     // create the table
     global $wpdb;
 
-    return $wpdb->prefix . 'nevcom';
+    return $wpdb->prefix . $basename;
 
   }
 
@@ -62,6 +58,7 @@ class NevCom {
     global $wpdb;
 
     $table_name = self::_table();
+    $standings_table = self::_table('nevcom_standings');
 
     $charset_collate = $wpdb->get_charset_collate();
 
@@ -90,8 +87,24 @@ class NevCom {
       PRIMARY KEY pk (code)
     ) $charset_collate;";
 
+    $sql2 = "CREATE TABLE $standings_table (
+      id mediumint(11) NOT NULL AUTO_INCREMENT,
+      url VARCHAR(255) not null,
+      position INT not null,
+      team VARCHAR(255) not null,
+      games INT not null default 0,
+      points INT not null default 0,
+      sets_won INT not null default 0,
+      sets_lost INT not null default 0,
+      points_won INT not null default 0,
+      points_lost INT not null default 0,
+      updated_at INT,
+      UNIQUE KEY id (id),
+      PRIMARY KEY pk (url, position)
+    ) $charset_collate;";
     require_once( ABSPATH .'wp-admin/includes/upgrade.php' );
     dbDelta( $sql );
+    dbDelta( $sql2 );
 
     add_option( 'nevcom_db_version', USREF__DB_VERSION );
 
