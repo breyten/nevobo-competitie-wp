@@ -74,6 +74,8 @@ class NevCom {
       code varchar(255) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT '' NOT NULL,
       code_human varchar(255) DEFAULT '' NOT NULL,
       code_link varchar(255) DEFAULT '' NOT NULL,
+      regio VARCHAR(255) not null,
+      poule VARCHAR(255) not null,
       title tinytext not null,
       description text not null,
       home VARCHAR(255),
@@ -268,6 +270,16 @@ class NevCom {
     return trim(preg_replace('/Wedstrijd:\s+/', '', $info[0]));
   }
 
+  private static function _get_regio_and_poule($code) {
+    $matches = array();
+    if (preg_match('/^(\d{4})([\d\w]+)\s/', $code, $matches)) {
+      array_shift($matches);
+      return $matches;
+    } else {
+      return array(null, null);
+    }
+  }
+
   public static function update_program() {
     foreach(self::$following_clubs as $club_code => $club_name) {
       self::update_program_for_club($club_code, $club_name);
@@ -294,7 +306,7 @@ class NevCom {
       list ($home, $away) = self::_get_teams($item);
       if (self::_can_include_game($home, $away, $item, $club_name)) {
         $code = self::_get_code($item);
-
+        list ($regio, $poule) = self::_get_regio_and_poule($code);
         $existing = $wpdb->get_row(
           $wpdb->prepare("SELECT id FROM $table_name WHERE code = %s", $code)
         );
@@ -310,6 +322,8 @@ class NevCom {
               'code' => $code,
               'code_human' => $code,
               'code_link' => $item->get_id(),
+              'regio' => $regio,
+              'poule' => $poule,
               'title' => $item->get_title(),
               'description' => $item->get_description(),
               'home' => $home,
@@ -333,6 +347,8 @@ class NevCom {
               'code' => $code,
               'code_human' => $code,
               'code_link' => $item->get_id(),
+              'regio' => $regio,
+              'poule' => $poule,
               'title' => $item->get_title(),
               'description' => $item->get_description(),
               'home' => $home,
