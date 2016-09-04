@@ -37,8 +37,8 @@ class NevCom {
     //Hook our function , wi_create_backup(), into the action wi_create_daily_backup
     add_action( 'nevcom_get_program', array( 'NevCom', 'update_program' ) );
     add_action( 'wp_head', array('NevCom', 'inject_styles_and_scripts' ) );
-    // filters
-    add_filter( 'the_content', array( 'NevCom', 'show_games' ) );
+    // filters/shortcodes
+    add_shortcode('nevcom', array( 'NevCom', 'show_games' ));
     // ajax form submission
     add_action('wp_ajax_nevcom_submit_form', array( 'NevCom', 'submit_form' ) );
     add_action('wp_ajax_nopriv_nevcom_submit_form', array( 'NevCom', 'submit_form' ) );
@@ -177,14 +177,25 @@ class NevCom {
     print $output;
   }
 
-  public static function show_games($content) {
+  public static function show_games($attrs, $content, $tag) {
     // create the table
     global $wpdb;
 
     $table_name = self::_table();
 
+    $where_clauses = [
+      'DATE(`time`) >= DATE(NOW())',
+    ];
+
+    if (array_key_exists('team', $attrs)) {
+      $where_team = $attrs['team'];
+      $where_clauses[] = "((`home` = \"$where_team\") OR (`away` = \"$where_team\"))";
+    }
+
+    $where_sql = implode(' AND ', $where_clauses);
+
     $results = $wpdb->get_results(
-      "SELECT * FROM $table_name WHERE DATE(`time`) >= DATE(NOW()) ORDER BY `time`",
+      "SELECT * FROM $table_name WHERE $where_sql ORDER BY `time`",
       OBJECT
     );
 
@@ -222,7 +233,7 @@ class NevCom {
 
     $output[] = '</div>';
 
-    return str_replace('[nevcom]', implode("\n", $output), $content);
+    return implode("\n", $output);
   }
 
   private static function _get_teams($item) {
