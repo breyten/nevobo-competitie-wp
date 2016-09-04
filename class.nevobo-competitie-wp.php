@@ -90,6 +90,7 @@ class NevCom {
     $sql2 = "CREATE TABLE $standings_table (
       id mediumint(11) NOT NULL AUTO_INCREMENT,
       url VARCHAR(255) not null,
+      sequence INT not null,
       position INT not null,
       team VARCHAR(255) not null,
       games INT not null default 0,
@@ -100,7 +101,7 @@ class NevCom {
       points_lost INT not null default 0,
       updated_at INT,
       UNIQUE KEY id (id),
-      PRIMARY KEY pk (url, position)
+      PRIMARY KEY pk (url, team)
     ) $charset_collate;";
     require_once( ABSPATH .'wp-admin/includes/upgrade.php' );
     dbDelta( $sql );
@@ -126,6 +127,7 @@ class NevCom {
     global $wpdb;
 
     $table_name = self::_table();
+    $standings_table = self::_table('nevcom_standings');
 
     $sql = "DROP TABLE $table_name;";
 
@@ -296,6 +298,55 @@ class NevCom {
   public static function update_program() {
     foreach(self::$following_clubs as $club_code => $club_name) {
       self::update_program_for_club($club_code, $club_name);
+    }
+    self::update_standings('3000', 'H5B1');
+  }
+
+  public static function update_standings($regio, $poule) {
+    // create the table
+    global $wpdb;
+
+    // ugh stable urls or something
+    $regio_as_human = array(
+      '3000' => 'regio-west',
+      '9000' => 'nationale-competitie'
+    );
+
+    $field_conversions = array(
+      'nummer' => 'position',
+      'team' => 'team',
+      'wedstrijden' => 'games',
+      'punten' => 'points',
+      'setsvoor' => 'sets_won',
+      'setstegen' => 'sets_lost',
+      'puntenvoor' => 'points_won',
+      'puntentegen' => 'points_lost'
+    );
+
+    $feed_url = 'https://api.nevobo.nl/export/poule/'. $regio_as_human[$regio] .'/'. $poule .'/stand.rss';
+
+    $feed = new SimplePie();
+    $feed->set_feed_url($feed_url);
+    $feed->init();
+
+    $items = $feed->get_items();
+
+    $rankings = $feed->get_channel_tags('http://www.nevobo.nl/competitie/', 'ranking');
+
+    $seq = 0;
+    foreach($rankings as $ranking_raw) {
+      $ranking = $ranking_raw['child']['http://www.nevobo.nl/competitie/'];
+      $record = array(
+        'url' => $items[0]->get_link(),
+        'updated_at' => current_time('timestamp'),
+        'sequence' => $seq
+      );
+      foreach($ranking as $veld => $data) {
+        $dst_field = $field_conversions[$veld];
+        $record[$dst_field] = $data[0]['data'];
+      }
+      $wpdb->replace(self::_table('nevcom_standings'), $record);
+      $seq += 1;
     }
   }
 
