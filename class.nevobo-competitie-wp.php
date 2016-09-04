@@ -122,6 +122,10 @@ class NevCom {
   public static function inject_styles_and_scripts() {
     $output = '
     <style type="text/css">
+    .game-last-updated div {
+      margin-top: 10px;
+      text-align: right;
+    }
     .game-header {
       border-bottom: 1px solid #e7ecf1;
     }
@@ -202,6 +206,13 @@ class NevCom {
     $output = array();
     $output[] = '<div id="games-table">';
 
+    $time_result = $wpdb->get_results(
+      "SELECT * FROM $table_name ORDER BY `updated_at` DESC LIMIT 1",
+      OBJECT
+    );
+    $last_update = human_time_diff( $time_result[0]->updated_at, current_time('timestamp') ) . ' geleden';
+    $last_update_html = '<div class="row game-last-updated"><div class="col-xs-12"><strong>Bijgewerkt:</strong> '. $last_update .' </div></div>';
+
     $old_date = '';
     $dtza = new DateTimeZone("Europe/Amsterdam");
     $utcz = new DateTimeZone("UTC");
@@ -231,6 +242,7 @@ class NevCom {
       $output[] = '</div>';
     }
 
+    $output[] = $last_update_html;
     $output[] = '</div>';
 
     return implode("\n", $output);
@@ -304,7 +316,7 @@ class NevCom {
               'away' => $away,
               'location' => self::_get_location($item),
               'court' => 'Onbekend',
-              'updated_at' => $item->get_date( 'U' )
+              'updated_at' => current_time('timestamp')
             ),
             array(
               'id' => $existing->id,
@@ -327,7 +339,7 @@ class NevCom {
               'away' => $away,
               'location' => self::_get_location($item),
               'court' => 'Onbekend',
-              'updated_at' => $item->get_date( 'U' )
+              'updated_at' => urrent_time('timestamp')
             )
           );
         }
