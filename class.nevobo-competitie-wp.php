@@ -345,7 +345,23 @@ class NevCom {
         $dst_field = $field_conversions[$veld];
         $record[$dst_field] = $data[0]['data'];
       }
-      $wpdb->replace(self::_table('nevcom_standings'), $record);
+
+      $existing = $wpdb->get_row(
+        $wpdb->prepare(
+          "SELECT id FROM $table_name WHERE `url` = %s AND `team` = %s",
+          $record['url'], $record['team'])
+      );
+
+      if ($existing) {
+        $wpdb->update(
+          self::_table('nevcom_standings'), $record,
+          array(
+            'id' => $existing->id,
+          )
+        );
+      } else {
+        $wpdb->replace(self::_table('nevcom_standings'), $record);
+      }
       $seq += 1;
     }
   }
