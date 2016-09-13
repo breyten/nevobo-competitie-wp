@@ -39,6 +39,7 @@ class NevCom {
     add_action( 'wp_head', array('NevCom', 'inject_styles_and_scripts' ) );
     // filters/shortcodes
     add_shortcode('nevcom', array( 'NevCom', 'show_games' ));
+    add_shortcode('nevcom-rankings', array( 'NevCom', 'show_rankings' ));
   }
 
   private static function _table($basename = "nevcom") {
@@ -198,6 +199,63 @@ class NevCom {
     print $output;
   }
 
+  public static function show_rankings($attrs, $content, $tag) {
+    // create the table
+    global $wpdb;
+
+    $table_name = self::_table('nevcom_standings');
+
+    $where_clauses = [
+    ];
+
+    if (array_key_exists('team', $attrs)) {
+      $where_team = $attrs['team'];
+      $where_clauses[] = "`url` = (SELECT `url` FROM $table_name WHERE team = \"$where_team\" LIMIT 1)";
+    }
+
+    $where_sql = implode(' AND ', $where_clauses);
+
+    $results = $wpdb->get_results(
+      "SELECT * FROM $table_name WHERE $where_sql ORDER BY `url`, `position`, `sequence`",
+      OBJECT
+    );
+
+    $output = array();
+    $output[] = '<div id="standings-table">';
+
+    $time_result = $wpdb->get_results(
+      "SELECT * FROM $table_name ORDER BY `updated_at` DESC LIMIT 1",
+      OBJECT
+    );
+    $last_update = human_time_diff( $time_result[0]->updated_at, current_time('timestamp') ) . ' geleden';
+    $last_update_html = '<div class="row game-last-updated"><div class="col-xs-12"><strong>Bijgewerkt:</strong> '. $last_update .' </div></div>';
+
+    $show_fields = array(
+      "position" => "col-xs-1 col-sm-1 col-md-1 col-lg-1",
+      "team" => "col-xs-11 col-sm-4 col-md-5 col-lg-5",
+      "games" => "col-xs-6 col-sm-1 col-md-1 col-lg-1",
+      "points" => "col-xs-6 col-sm-1 col-md-1 col-lg-1",
+      "sets_won" => "col-xs-6 col-sm-1 col-md-1 col-lg-1",
+      "sets_lost" => "col-xs-6 col-sm-1 col-md-1 col-lg-1",
+      "points_won" => "col-xs-6 col-sm-1 col-md-1 col-lg-1",
+      "points_lost" => "col-xs-6 col-sm-1 col-md-1 col-lg-1",
+    );
+
+    foreach($results as $result) {
+      $output[] = '<div class="row standings-info">';
+      foreach($show_fields as $field => $class_names) {
+        $output[] = "<div class=\"$class_names standings-$field\">". $result->$field ."</div>";
+      }
+      $output[] = '</div>';
+    }
+
+    $output[] = $last_update_html;
+    $output[] = '</div>';
+
+    return implode("\n", $output);
+
+  }
+
   public static function show_games($attrs, $content, $tag) {
     // create the table
     global $wpdb;
@@ -348,7 +406,7 @@ class NevCom {
 
       $existing = $wpdb->get_row(
         $wpdb->prepare(
-          "SELECT id FROM $table_name WHERE `url` = %s AND `team` = %s",
+          "SELECT id FROM $table_name WHERE url = %s AND team = %s",
           $record['url'], $record['team'])
       );
 
