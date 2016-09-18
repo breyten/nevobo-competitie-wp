@@ -353,11 +353,28 @@ class NevCom {
     }
   }
 
+  public static function _get_all_poules() {
+    // create the table
+    global $wpdb;
+
+    $table_name = self::_table();
+
+    $records = $wpdb->get_results(
+      "SELECT regio, poule FROM $table_name GROUP BY regio, poule",
+      OBJECT
+    );
+
+    return $records;
+  }
+
   public static function update_program() {
     foreach(self::$following_clubs as $club_code => $club_name) {
       self::update_program_for_club($club_code, $club_name);
     }
-    self::update_standings('3000', 'H5B1');
+
+    foreach(self::_get_all_poules() as $record) {
+      self::update_standings($record->regio, $record->poule);
+    }
   }
 
   public static function update_standings($regio, $poule) {
