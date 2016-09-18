@@ -364,6 +364,8 @@ class NevCom {
     // create the table
     global $wpdb;
 
+    $table_name = self::_table('nevcom_standings');
+
     // ugh stable urls or something
     $regio_as_human = array(
       '3000' => 'regio-west',
@@ -412,13 +414,13 @@ class NevCom {
 
       if ($existing) {
         $wpdb->update(
-          self::_table('nevcom_standings'), $record,
+          $table_name, $record,
           array(
             'id' => $existing->id,
           )
         );
       } else {
-        $wpdb->replace(self::_table('nevcom_standings'), $record);
+        $wpdb->replace($table_name, $record);
       }
       $seq += 1;
     }
