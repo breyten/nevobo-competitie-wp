@@ -93,7 +93,10 @@ class NevCom {
       url VARCHAR(255) not null,
       sequence INT not null,
       position INT not null,
+      regio VARCHAR(255) not null,
+      poule VARCHAR(255) not null,
       team VARCHAR(255) not null,
+      team_id VARCHAR(255) not null,
       games INT not null default 0,
       points INT not null default 0,
       sets_won INT not null default 0,
@@ -211,20 +214,53 @@ class NevCom {
     if (array_key_exists('team', $attrs)) {
       $where_team = $attrs['team'];
       $where_clauses[] = "`url` = (SELECT `url` FROM $table_name WHERE team = \"$where_team\" LIMIT 1)";
-    }
+      $where_sql = implode(' AND ', $where_clauses);
 
-    $where_sql = implode(' AND ', $where_clauses);
+      return self::show_rankings_for($where_sql);
+    } elseif (array_key_exists('club', $attrs)) {
+      $where_club = $attrs['club'];
+      $where_clauses[] = "`team_id` LIKE \"$where_club%\"";
+      $where_sql = implode(' AND ', $where_clauses);
+
+      if (array_key_exists('mode', $attrs)) {
+        return self::show_rankings_for($where_sql, "team_id", false);
+      } else {
+        $output = array();
+        $urls = $wpdb->get_results(
+          "SELECT DISTINCT(`url`) FROM $table_name WHERE $where_sql ORDER BY team_id",
+          OBJECT
+        );
+
+        foreach($urls as $url) {
+          $output[] = self::show_rankings_for("`url` = \"$url->url\"");
+        }
+
+        return implode("\n", $output);
+      }
+    }
+  }
+
+  public static function show_rankings_for($where_sql, $sort_sql="`regio`, `poule`, `url`, `position`, `sequence`", $show_header=true) {
+    // create the table
+    global $wpdb;
+
+    $table_name = self::_table('nevcom_standings');
 
     $results = $wpdb->get_results(
-      "SELECT * FROM $table_name WHERE $where_sql ORDER BY `url`, `position`, `sequence`",
+      "SELECT * FROM $table_name WHERE $where_sql ORDER BY $sort_sql",
       OBJECT
     );
 
     $output = array();
-    $output[] = '<div id="standings-table">';
+    $output[] = '<div class="standings-table">';
+
+    if ((count($results) > 0) && $show_header) {
+      $poule_name = $results[0]->regio .' '. $results[0]->poule;
+      $output[] = '<div class="row"><div class="col-xs-12"><h3>'. $poule_name .'</h3></div></div>';
+    }
 
     $time_result = $wpdb->get_results(
-      "SELECT * FROM $table_name ORDER BY `updated_at` DESC LIMIT 1",
+      "SELECT * FROM $table_name WHERE $where_sql ORDER BY `updated_at` DESC LIMIT 1",
       OBJECT
     );
     $last_update = human_time_diff( $time_result[0]->updated_at, current_time('timestamp') ) . ' geleden';
@@ -256,7 +292,7 @@ class NevCom {
 
   }
 
-  public static function show_games($attrs, $content, $tag) {
+  public static function show_games($attrs=array(), $content='', $tag='') {
     // create the table
     global $wpdb;
 
@@ -416,11 +452,18 @@ class NevCom {
       $record = array(
         'url' => $items[0]->get_link(),
         'updated_at' => current_time('timestamp'),
-        'sequence' => $seq
+        'sequence' => $seq,
+        'regio' => $regio,
+        'poule' => $poule
       );
+
       foreach($ranking as $veld => $data) {
         $dst_field = $field_conversions[$veld];
         $record[$dst_field] = $data[0]['data'];
+        // ugly, but works
+        if ($veld == 'team') {
+          $record['team_id'] = $data[0]['attribs']['']['id'];
+        }
       }
 
       $existing = $wpdb->get_row(
