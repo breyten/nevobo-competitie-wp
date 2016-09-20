@@ -240,6 +240,38 @@ class NevCom {
     }
   }
 
+  public static function _poule_header($regio, $poule) {
+    $type_conversions = array(
+      'D' => 'Dames',
+      'H' => 'Heren'
+    );
+    $season_part_conversions = array(
+      '1' => 'Eerste Helft',
+      '2' => 'Tweede Helft'
+    );
+
+    if ($regio == '3000') {
+      if ($poule[0] == '3') {
+        return $poule[0] .'e Divisie '. $poule[1] .' '. $type_conversions[$poule[2]];
+      } elseif ($poule[1] == 'P') {
+        return 'Promotieklasse '. $poule[2] .' '. $type_conversions[$poule[0]];
+      } else {
+        return $poule[1] .'e Klasse '. $poule[2] .' '. $type_conversions[$poule[0]] .' '. $season_part_conversions[$poule[3]];
+      }
+      return $regio .' '. $poule;
+    } elseif ($regio == '9000') {
+      if ($poule[0] == 'E') {
+        return "Eredivisie ". $type_conversions[$poule[1]];
+      } elseif ($poule[0] == 'T') {
+        return "Topdivisie ". $type_conversions[$poule[1]];
+      } else {
+        return $poule[0] .'e Divisie '. $poule[1] .' '. $type_conversions[$poule[2]];
+      }
+    } else {
+      return $regio .' '. $poule;
+    }
+  }
+
   public static function show_rankings_for($where_sql, $sort_sql="`regio`, `poule`, `url`, `position`, `sequence`", $show_header=true) {
     // create the table
     global $wpdb;
@@ -255,7 +287,7 @@ class NevCom {
     $output[] = '<div class="standings-table">';
 
     if ((count($results) > 0) && $show_header) {
-      $poule_name = $results[0]->regio .' '. $results[0]->poule;
+      $poule_name = self::_poule_header($results[0]->regio, $results[0]->poule);
       $output[] = '<div class="row"><div class="col-xs-12"><h3>'. $poule_name .'</h3></div></div>';
     }
 
