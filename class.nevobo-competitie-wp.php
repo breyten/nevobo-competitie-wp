@@ -143,6 +143,13 @@ class NevCom {
   public static function inject_styles_and_scripts() {
     $output = '
     <style type="text/css">
+    .rankings-header div {
+      font-weight: bold;
+      padding-bottom: 5px;
+    }
+    .rankings-info div {
+      padding-bottom: 5px;
+    }
     .game-last-updated div {
       margin-top: 10px;
       text-align: right;
@@ -284,7 +291,7 @@ class NevCom {
     );
 
     $output = array();
-    $output[] = '<div class="standings-table">';
+    $output[] = '<div class="rankings-table">';
 
     if ((count($results) > 0) && $show_header) {
       $poule_name = self::_poule_header($results[0]->regio, $results[0]->poule);
@@ -308,11 +315,27 @@ class NevCom {
       "points_won" => "col-xs-6 col-sm-1 col-md-1 col-lg-1",
       "points_lost" => "col-xs-6 col-sm-1 col-md-1 col-lg-1",
     );
+    $fields_headers = array(
+      "position" => "#",
+      "team" => "Team",
+      "games" => "W",
+      "points" => "P",
+      "sets_won" => "Sw",
+      "sets_lost" => "Sv",
+      "points_won" => "Pw",
+      "points_lost" => "Pv",
+    );
+
+    $output[] = '<div class="row rankings-header">';
+    foreach($show_fields as $field => $class_names) {
+      $output[] = "<div class=\"$class_names rankings-header-$field\">". $fields_headers[$field] ."</div>";
+    }
+    $output[] = '</div>';
 
     foreach($results as $result) {
-      $output[] = '<div class="row standings-info">';
+      $output[] = '<div class="row rankings-info">';
       foreach($show_fields as $field => $class_names) {
-        $output[] = "<div class=\"$class_names standings-$field\">". $result->$field ."</div>";
+        $output[] = "<div class=\"$class_names rankings-$field\">". $result->$field ."</div>";
       }
       $output[] = '</div>';
     }
