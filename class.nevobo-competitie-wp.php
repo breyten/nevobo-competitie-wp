@@ -461,6 +461,7 @@ class NevCom {
   public static function update_program() {
     foreach(self::$following_clubs as $club_code => $club_name) {
       self::update_program_for_club($club_code, $club_name);
+      self::update_results_for_club($club_code);
     }
 
     foreach(self::_get_all_poules() as $record) {
@@ -541,16 +542,46 @@ class NevCom {
     }
   }
 
+  public static function update_results_for_club($club_code) {
+    // create the table
+    global $wpdb;
+
+    $table_name = self::_table();
+
+    $url = 'https://api.nevobo.nl/export/vereniging/'. $club_code .'/resultaten.rss';
+
+    $feed = new SimplePie();
+    $feed->set_feed_url($url);
+    $feed->init();
+
+    foreach($feed->get_items() as $key=>$item) {
+      $existing = $wpdb->get_row(
+        $wpdb->prepare("SELECT id FROM $table_name WHERE url = %s", $item->get_link())
+      );
+
+      $matches = array();
+      if ($existing && preg_match('/,\s+Uitslag:\s+(\d+)\-(\d+)$/', $item->get_title(), $matches)) {
+        $wpdb->update(
+          $table_name,
+          array(
+            'sets_home' => $matches[1],
+            'sets_away' => $matches[2],
+            'updated_at' => current_time('timestamp')
+          ),
+          array(
+            'id' => $existing->id,
+          )
+        );
+      }
+    }
+  }
+
   public static function update_program_for_club($club_code, $club_name) {
     // create the table
     global $wpdb;
 
     $table_name = self::_table();
 
-    // FIXME: links should be like this now:
-    // http://www.volleybal.nl/handlers/competition/program.json?club=CKL7K12&start=0&amount=20&filtervalue=&filtertype=
-    //$url = 'http://www.volleybal.nl/application/handlers/export.php?format=rss&type=team&programma=3208DS+1&iRegionId=9000';
-    //https://api.nevobo.nl/export/vereniging/CKL7K12/programma.rss
     $url = 'https://api.nevobo.nl/export/vereniging/'. $club_code .'/programma.rss';
 
     $feed = new SimplePie();
