@@ -523,8 +523,8 @@ class NevCom {
 
       $existing = $wpdb->get_row(
         $wpdb->prepare(
-          "SELECT id FROM $table_name WHERE url = %s AND team = %s",
-          $record['url'], $record['team'])
+          "SELECT id FROM $table_name WHERE url = %s AND team_id = %s",
+          $record['url'], $record['team_id'])
       );
 
       if ($existing) {
@@ -610,7 +610,7 @@ class NevCom {
               'away' => $away,
               'location' => self::_get_location($item),
               'court' => 'Onbekend',
-              'updated_at' => urrent_time('timestamp')
+              'updated_at' => current_time('timestamp')
             )
           );
         }
