@@ -561,11 +561,18 @@ class NevCom {
 
       $matches = array();
       if ($existing && preg_match('/,\s+Uitslag:\s+(\d+)\-(\d+)$/', $item->get_title(), $matches)) {
+        $set_matches = array();
+        if (preg_match('/,\s+Setstanden:\s+(.*)$/', $item->get_description(), $set_matches)) {
+          $set_result = $set_matches[1];
+        } else {
+          $set_result = NULL;
+        }
         $wpdb->update(
           $table_name,
           array(
             'sets_home' => $matches[1],
             'sets_away' => $matches[2],
+            'sets_details' => $set_result,
             'updated_at' => current_time('timestamp')
           ),
           array(
