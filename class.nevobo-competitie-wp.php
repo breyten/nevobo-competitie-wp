@@ -271,6 +271,8 @@ class NevCom {
         return "Eredivisie ". $type_conversions[$poule[1]];
       } elseif ($poule[0] == 'T') {
         return "Topdivisie ". $type_conversions[$poule[1]];
+      } elseif ($poule[0] == 'N') {
+        return 'Nationale Beker '. $type_conversions[$poule[2]] .' Ronde '. $poule[3];
       } else {
         return $poule[0] .'e Divisie '. $poule[1] .' '. $type_conversions[$poule[2]];
       }
@@ -454,7 +456,9 @@ class NevCom {
     return $item->get_link();
   }
 
-  private static function _get_regio_and_poule($code) {
+  private static function _get_regio_and_poule($item) {
+    list($code_full, $dummy) = preg_split('/,\s+Datum:/', $item->get_description(), 2);
+    $code = str_replace('Wedstrijd: ', '', $code_full);
     $matches = array();
     if (preg_match('/^(\d{4})([\d\w]+)\s/', $code, $matches)) {
       array_shift($matches);
@@ -583,7 +587,6 @@ class NevCom {
         list ($home, $away) = self::_get_teams($item);
         if (self::_can_include_game($home, $away, $item, $club_name)) {
           $code = self::_get_code($item);
-          list ($regio, $poule) = self::_get_regio_and_poule($code);
 
           $wpdb->replace(
             $table_name,
@@ -650,7 +653,7 @@ class NevCom {
       list ($home, $away) = self::_get_teams($item);
       if (self::_can_include_game($home, $away, $item, $club_name)) {
         $code = self::_get_code($item);
-        list ($regio, $poule) = self::_get_regio_and_poule($code);
+        list ($regio, $poule) = self::_get_regio_and_poule($item);
         $existing = $wpdb->get_row(
           $wpdb->prepare("SELECT id FROM $table_name WHERE code = %s", $code)
         );
