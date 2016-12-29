@@ -431,7 +431,12 @@ class NevCom {
   }
 
   private static function _get_teams($item) {
-    list ($date, $title) = preg_split('/:\s+/', $item->get_title(), 2);
+    $title = "";
+    if (preg_match('/,\s+Uitslag:\s+/', $item->get_title())) {
+      list ($title, $result) = preg_split('/,\s+Uitslag:\s+/', $item->get_title(), 2);
+    } else {
+      list ($date, $title) = preg_split('/:\s+/', $item->get_title(), 2);
+    }
     list ($home, $away) = preg_split('/\s+-\s+/', $title, 2);
     return array($home, $away);
   }
@@ -446,8 +451,7 @@ class NevCom {
   }
 
   private static function _get_code($item) {
-    $info = preg_split('/,\s+/', $item->get_description());
-    return trim(preg_replace('/Wedstrijd:\s+/', '', $info[0]));
+    return $item->get_link();
   }
 
   private static function _get_regio_and_poule($code) {
@@ -574,6 +578,37 @@ class NevCom {
       $existing = $wpdb->get_row(
         $wpdb->prepare("SELECT id FROM $table_name WHERE url = %s", $item->get_link())
       );
+
+      if (!$existing) {
+        list ($home, $away) = self::_get_teams($item);
+        if (self::_can_include_game($home, $away, $item, $club_name)) {
+          $code = self::_get_code($item);
+          list ($regio, $poule) = self::_get_regio_and_poule($code);
+
+          $wpdb->replace(
+            $table_name,
+            array(
+              'time' => $item->get_date( 'Y-m-d H:i:s' ),
+              'time_str' => $item->get_date( 'Y-m-d H:i:s' ),
+              'timestamp' => $item->get_date( 'U' ),
+              'url' => $item->get_link(),
+              'code' => $code,
+              'code_human' => $code,
+              'code_link' => $item->get_id(),
+              'title' => $item->get_title(),
+              'description' => $item->get_description(),
+              'home' => $home,
+              'away' => $away,
+              'court' => 'Onbekend',
+              'updated_at' => current_time('timestamp')
+            )
+          );
+
+          $existing = $wpdb->get_row(
+            $wpdb->prepare("SELECT id FROM $table_name WHERE url = %s", $item->get_link())
+          );
+        }
+      }
 
       $matches = array();
       if ($existing && preg_match('/,\s+Uitslag:\s+(\d+)\-(\d+)$/', $item->get_title(), $matches)) {
