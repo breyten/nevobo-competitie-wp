@@ -309,13 +309,13 @@ class NevCom {
 
     $show_fields = array(
       "position" => "col-xs-1 col-sm-1 col-md-1 col-lg-1",
-      "team" => "col-xs-11 col-sm-4 col-md-5 col-lg-5",
-      "games" => "col-xs-6 col-sm-1 col-md-1 col-lg-1",
-      "points" => "col-xs-6 col-sm-1 col-md-1 col-lg-1",
-      "sets_won" => "col-xs-6 col-sm-1 col-md-1 col-lg-1",
-      "sets_lost" => "col-xs-6 col-sm-1 col-md-1 col-lg-1",
-      "points_won" => "col-xs-6 col-sm-1 col-md-1 col-lg-1",
-      "points_lost" => "col-xs-6 col-sm-1 col-md-1 col-lg-1",
+      "team" => "col-xs-9 col-sm-4 col-md-5 col-lg-5",
+      "games" => "col-xs-1 col-sm-1 col-md-1 col-lg-1 hidden-xs visible-sm-block visible-md-block visible-lg-block",
+      "points" => "col-xs-1 col-sm-1 col-md-1 col-lg-1",
+      "sets_won" => "col-xs-6 col-sm-1 col-md-1 col-lg-1 hidden-xs hidden-sm visible-md-block visible-lg-block",
+      "sets_lost" => "col-xs-6 col-sm-1 col-md-1 col-lg-1 hidden-xs hidden-sm visible-md-block visible-lg-block",
+      "points_won" => "col-xs-6 col-sm-1 col-md-1 col-lg-1 hidden-xs hidden-sm hidden-md visible-lg-block",
+      "points_lost" => "col-xs-6 col-sm-1 col-md-1 col-lg-1 hidden-xs hidden-sm hidden-md visible-lg-block",
     );
     $fields_headers = array(
       "position" => "#",
