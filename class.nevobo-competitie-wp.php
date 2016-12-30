@@ -342,6 +342,7 @@ class NevCom {
           OBJECT
         );
         $result->position = $result->position .'/'. $poule_size[0]->num_teams;
+        $result->team = '<a href="'. $result->url .'" target="_blank">'. $result->team .'</a>';
       }
       foreach($show_fields as $field => $class_names) {
         $output[] = "<div class=\"$class_names rankings-$field\">". $result->$field ."</div>";
