@@ -215,8 +215,7 @@ class NevCom {
 
     $table_name = self::_table('nevcom_standings');
 
-    $where_clauses = [
-    ];
+    $where_clauses = array();
 
     if (array_key_exists('team', $attrs)) {
       $where_team = $attrs['team'];
@@ -497,7 +496,9 @@ class NevCom {
     }
 
     foreach(self::_get_all_poules() as $record) {
-      self::update_standings($record->regio, $record->poule);
+      if (!empty($record->regio)) {
+        self::update_standings($record->regio, $record->poule);
+      }
     }
   }
 
