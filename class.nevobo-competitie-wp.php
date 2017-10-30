@@ -534,11 +534,11 @@ class NevCom {
 
     $items = $feed->get_items();
 
-    $rankings = $feed->get_channel_tags('http://www.nevobo.nl/competitie/', 'ranking');
+    $rankings = $feed->get_channel_tags('https://www.nevobo.nl/competitie/', 'ranking');
 
     $seq = 0;
     foreach($rankings as $ranking_raw) {
-      $ranking = $ranking_raw['child']['http://www.nevobo.nl/competitie/'];
+      $ranking = $ranking_raw['child']['https://www.nevobo.nl/competitie/'];
       $record = array(
         'url' => $items[0]->get_link(),
         'updated_at' => current_time('timestamp'),
