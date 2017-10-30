@@ -528,6 +528,7 @@ class NevCom {
     $feed_url = 'https://api.nevobo.nl/export/poule/'. $regio_as_human[$regio] .'/'. $poule .'/stand.rss';
 
     $feed = new SimplePie();
+    $feed->set_cache_location('/var/www/vhosts/usvolleybal.nl/httpdocs/wp-content/plugins/nevobo-competitie-wp/cache');
     $feed->set_feed_url($feed_url);
     $feed->init();
 
@@ -584,6 +585,7 @@ class NevCom {
     $url = 'https://api.nevobo.nl/export/vereniging/'. $club_code .'/resultaten.rss';
 
     $feed = new SimplePie();
+    $feed->set_cache_location('/var/www/vhosts/usvolleybal.nl/httpdocs/wp-content/plugins/nevobo-competitie-wp/cache');
     $feed->set_feed_url($url);
     $feed->init();
 
@@ -655,6 +657,7 @@ class NevCom {
     $url = 'https://api.nevobo.nl/export/vereniging/'. $club_code .'/programma.rss';
 
     $feed = new SimplePie();
+    $feed->set_cache_location('/var/www/vhosts/usvolleybal.nl/httpdocs/wp-content/plugins/nevobo-competitie-wp/cache');
     $feed->set_feed_url($url);
     $feed->init();
 
