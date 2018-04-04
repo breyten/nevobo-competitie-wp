@@ -333,9 +333,8 @@ class NevCom {
     }
     $output[] = '</div>';
 
-    $prev_team = "";
     foreach($results as $result) {
-      if (($result->team != $prev_team) && (substr($result->poule, 0, 2) != "NB")) {
+      if (substr($result->poule, 0, 2) != "NB") {
         $output[] = '<div class="row rankings-info">';
         if (!$show_header) {
           $poule_size = $wpdb->get_results(
@@ -350,7 +349,6 @@ class NevCom {
         }
         $output[] = '</div>';
       }
-      $prev_team = $result->team;
     }
 
     $output[] = $last_update_html;
