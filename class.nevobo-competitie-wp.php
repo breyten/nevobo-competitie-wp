@@ -229,7 +229,7 @@ class NevCom {
       $where_sql = implode(' AND ', $where_clauses);
 
       if (array_key_exists('mode', $attrs)) {
-        return self::show_rankings_for($where_sql, "team_id", false);
+        return self::show_rankings_for($where_sql, "team_id, poule", false);
       } else {
         $output = array();
         $urls = $wpdb->get_results(
@@ -333,9 +333,10 @@ class NevCom {
     }
     $output[] = '</div>';
 
+    $prev_team = "";
     foreach($results as $result) {
-      if (substr($result->poule, 0, 2) != "NB") {
-        $output[] = '<div class="row rankings-info">';
+      if (($prev_team != $result->team_id) && (substr($result->poule, 0, 2) != "NB")) {
+        $output[] = '<div class="row rankings-info" data-prev-team="'. $prev_team .'">';
         if (!$show_header) {
           $poule_size = $wpdb->get_results(
             "SELECT COUNT(*) AS `num_teams` FROM $table_name WHERE `regio` = \"". $result->regio ."\" AND `poule` = \"". $result->poule ."\" LIMIT 1",
@@ -348,6 +349,7 @@ class NevCom {
           $output[] = "<div class=\"$class_names rankings-$field\">". $result->$field ."</div>";
         }
         $output[] = '</div>';
+        $prev_team = $result->team_id;
       }
     }
 
