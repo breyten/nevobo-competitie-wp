@@ -334,19 +334,21 @@ class NevCom {
     $output[] = '</div>';
 
     foreach($results as $result) {
-      $output[] = '<div class="row rankings-info">';
-      if (!$show_header) {
-        $poule_size = $wpdb->get_results(
-          "SELECT COUNT(*) AS `num_teams` FROM $table_name WHERE `regio` = \"". $result->regio ."\" AND `poule` = \"". $result->poule ."\" LIMIT 1",
-          OBJECT
-        );
-        $result->position = $result->position .'/'. $poule_size[0]->num_teams;
-        $result->team = '<a href="'. $result->url .'" target="_blank">'. $result->team .'</a>';
+      if (substr($result->poule, 0, 2) != "NB") {
+        $output[] = '<div class="row rankings-info">';
+        if (!$show_header) {
+          $poule_size = $wpdb->get_results(
+            "SELECT COUNT(*) AS `num_teams` FROM $table_name WHERE `regio` = \"". $result->regio ."\" AND `poule` = \"". $result->poule ."\" LIMIT 1",
+            OBJECT
+          );
+          $result->position = $result->position .'/'. $poule_size[0]->num_teams;
+          $result->team = '<a href="'. $result->url .'" target="_blank">'. $result->team .'</a>';
+        }
+        foreach($show_fields as $field => $class_names) {
+          $output[] = "<div class=\"$class_names rankings-$field\">". $result->$field ."</div>";
+        }
+        $output[] = '</div>';
       }
-      foreach($show_fields as $field => $class_names) {
-        $output[] = "<div class=\"$class_names rankings-$field\">". $result->$field ."</div>";
-      }
-      $output[] = '</div>';
     }
 
     $output[] = $last_update_html;
