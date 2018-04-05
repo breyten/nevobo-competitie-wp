@@ -326,10 +326,21 @@ class NevCom {
       "points_won" => "Pw",
       "points_lost" => "Pv",
     );
+    $fields_tooltips = array(
+      "position" => "Plek",
+      "team" => "Team",
+      "games" => "Wedstrijden gespeeld",
+      "points" => "Punten",
+      "sets_won" => "Sets gewonnen",
+      "sets_lost" => "Sets verloren",
+      "points_won" => "Punten gewonnen",
+      "points_lost" => "Punten verloren",
+    );
+
 
     $output[] = '<div class="row rankings-header">';
     foreach($show_fields as $field => $class_names) {
-      $output[] = "<div class=\"$class_names rankings-header-$field\">". $fields_headers[$field] ."</div>";
+      $output[] = "<div class=\"$class_names rankings-header-$field\"><span data-toggle=\"tooltip\" data-placement=\"top\" title=\"". $fields_tooltips[$field] ."\">". $fields_headers[$field] ."</span></div>";
     }
     $output[] = '</div>';
 
