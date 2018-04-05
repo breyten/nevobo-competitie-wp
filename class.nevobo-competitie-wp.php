@@ -229,7 +229,7 @@ class NevCom {
       $where_sql = implode(' AND ', $where_clauses);
 
       if (array_key_exists('mode', $attrs)) {
-        return self::show_rankings_for($where_sql, "team_id, poule", false);
+        return self::show_rankings_for($where_sql, "team_id, right(poule, 1) desc", false);
       } else {
         $output = array();
         $urls = $wpdb->get_results(
