@@ -143,6 +143,8 @@ class NevCom {
   public static function inject_styles_and_scripts() {
     $output = '
     <style type="text/css">
+    .rankings {
+    }
     .rankings-header div {
       font-weight: bold;
       padding-bottom: 5px;
@@ -313,8 +315,6 @@ class NevCom {
       "points" => "col-xs-1 col-sm-1 col-md-1 col-lg-1",
       "sets_won" => "col-xs-6 col-sm-1 col-md-1 col-lg-1 hidden-xs hidden-sm visible-md-block visible-lg-block",
       "sets_lost" => "col-xs-6 col-sm-1 col-md-1 col-lg-1 hidden-xs hidden-sm visible-md-block visible-lg-block",
-      "points_won" => "col-xs-6 col-sm-1 col-md-1 col-lg-1 hidden-xs hidden-sm hidden-md visible-lg-block",
-      "points_lost" => "col-xs-6 col-sm-1 col-md-1 col-lg-1 hidden-xs hidden-sm hidden-md visible-lg-block",
     );
     $fields_headers = array(
       "position" => "#",
@@ -323,8 +323,6 @@ class NevCom {
       "points" => "P",
       "sets_won" => "Sw",
       "sets_lost" => "Sv",
-      "points_won" => "Pw",
-      "points_lost" => "Pv",
     );
     $fields_tooltips = array(
       "position" => "Plek",
@@ -333,8 +331,6 @@ class NevCom {
       "points" => "Punten",
       "sets_won" => "Sets gewonnen",
       "sets_lost" => "Sets verloren",
-      "points_won" => "Punten gewonnen",
-      "points_lost" => "Punten verloren",
     );
 
 
@@ -353,11 +349,13 @@ class NevCom {
             "SELECT COUNT(*) AS `num_teams` FROM $table_name WHERE `regio` = \"". $result->regio ."\" AND `poule` = \"". $result->poule ."\" LIMIT 1",
             OBJECT
           );
-          $result->position = $result->position .'/'. $poule_size[0]->num_teams;
+          $result->position = "<span data-toggle=\"tooltip\" data-placement=\"top\" title=\"van ". $poule_size[0]->num_teams ."\">".$result->position."</span>";
           $result->team = '<a href="'. $result->url .'" target="_blank">'. $result->team .'</a>';
+          $result->sets_won  = "<span data-toggle=\"tooltip\" data-placement=\"top\" title=\"Punten: ". $result->points_won ."\">".$result->sets_won."</span>";
+          $result->sets_lost  = "<span data-toggle=\"tooltip\" data-placement=\"top\" title=\"Punten: ". $result->points_lost ."\">".$result->sets_lost."</span>";
         }
         foreach($show_fields as $field => $class_names) {
-          $output[] = "<div class=\"$class_names rankings-$field\">". $result->$field ."</div>";
+          $output[] = "<div class=\"$class_names rankings rankings-$field\">". $result->$field ."</div>";
         }
         $output[] = '</div>';
         $prev_team = $result->team_id;
