@@ -387,6 +387,13 @@ class NevCom {
       $where_clauses[] = 'DATE(`time`) >= DATE(NOW())';
     } elseif ($when == 'past') {
       $where_clauses[] = '`time` <= NOW()';
+    } elseif ($when == 'saturday') {
+      $date_result = $wpdb->get_results(
+        'SELECT DATE(`time`) as game_date FROM '. $table_name  .' WHERE game_date >= DATE(NOW()) AND DAYOFWEEK(`time`) = 7 ORDER BY `updated_at` DESC LIMIT 1',
+        OBJECT
+      );
+
+      $where_clauses[] = 'DATE(`time`) = "'. $date_result[0]->game_date .'"';
     } else {
       $where_clauses[] = '1';
     }
