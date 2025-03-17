@@ -21,6 +21,7 @@ class NevCom {
   private static $following_clubs = array(
     "CKL7K12" => "US",
   );
+  private static $home_location = "Amstelcampus";
 
   public static function init() {
     if ( ! self::$initiated ) {
@@ -390,6 +391,7 @@ class NevCom {
     } elseif ($when == 'saturday') {
       $nextSaturday = new DateTime('saturday');
       $where_clauses[] = 'DATE(`time`) = "'. $nextSaturday->format('Y-m-d') .'"';
+      $where_clauses[] = '`location` = "'. self::$home_location .'"';
     } else {
       $where_clauses[] = '1';
     }
