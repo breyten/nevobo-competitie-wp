@@ -388,12 +388,8 @@ class NevCom {
     } elseif ($when == 'past') {
       $where_clauses[] = '`time` <= NOW()';
     } elseif ($when == 'saturday') {
-      $date_result = $wpdb->get_results(
-        'SELECT DATE(`time`) as game_date FROM '. $table_name  .' WHERE game_date >= DATE(NOW()) AND DAYOFWEEK(`time`) = 7 ORDER BY `updated_at` DESC LIMIT 1',
-        OBJECT
-      );
-
-      $where_clauses[] = 'DATE(`time`) = "'. $date_result[0]->game_date .'"';
+      $nextSaturday = new DateTime('saturday');
+      $where_clauses[] = 'DATE(`time`) = "'. $nextSaturday->format('Y-m-d') .'"';
     } else {
       $where_clauses[] = '1';
     }
@@ -411,7 +407,7 @@ class NevCom {
     );
 
     $output = array();
-    $output[] = '<div id="games-table">';
+    $output[] = '<div id="games-table games-'. $when .'">';
 
     $time_result = $wpdb->get_results(
       "SELECT * FROM $table_name ORDER BY `updated_at` DESC LIMIT 1",
