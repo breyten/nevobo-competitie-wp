@@ -385,6 +385,8 @@ class NevCom {
       $when = 'future';
     }
 
+    $show_location = not array_key_exists('show_location', $attrs);
+
     if ($when == 'future') {
       $where_clauses[] = 'DATE(`time`) >= DATE(NOW())';
     } elseif ($when == 'past') {
@@ -440,13 +442,15 @@ class NevCom {
         '<div class="col-xs-12 col-md-6 col-lg-6"><a href="%s" target="_blank">%s - %s</a></div>',
         $result->code_link, $result->home, $result->away
       );
-      $output[] = '<div class="col-xs-12 col-md-3 col-lg-3">'. $result->location .'</div>';
+      if ($show_location) {
+        $output[] = '<div class="col-xs-12 col-md-3 col-lg-3">'. $result->location .'</div>';
+      }
       # FIXME: something with results here ...
       $output[] = '<div class="col-xs-12 col-md-2 col-lg-2">';
       if ($result->sets_details) {
         $output[] = '<abbr title="'. $result->sets_details .'">'. $result->sets_home .'-'. $result->sets_away .'</abbr>';
       } else {
-        $output[] = '-';
+        $output[] = '&nbsp;';
       }
       $output[] = '</div>';
       $output[] = '</div>';
