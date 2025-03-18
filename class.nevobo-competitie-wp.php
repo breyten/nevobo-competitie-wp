@@ -37,6 +37,7 @@ class NevCom {
 
     //Hook our function , wi_create_backup(), into the action wi_create_daily_backup
     add_action( 'nevcom_get_program', array( 'NevCom', 'update_program' ) );
+    add_action( 'nevcom_empty_program', array( 'NevCom', 'empty_program' ) );
     add_action( 'wp_head', array('NevCom', 'inject_styles_and_scripts' ) );
     // filters/shortcodes
     add_shortcode('nevcom', array( 'NevCom', 'show_games' ));
@@ -404,7 +405,7 @@ class NevCom {
     $where_sql = implode(' AND ', $where_clauses);
 
     $results = $wpdb->get_results(
-      "SELECT * FROM $table_name WHERE $where_sql ORDER BY `time`",
+      "SELECT * FROM $table_name WHERE $where_sql ORDER BY `time`, `home`, `away`, `id` DESC",
       OBJECT
     );
 
@@ -518,6 +519,18 @@ class NevCom {
         self::update_standings($record->regio, $record->poule);
       }
     }
+  }
+
+  public static function empty_program() {
+    // create the table
+    global $wpdb;
+
+    $table_name = self::_table();
+
+    $records = $wpdb->get_results(
+      "DELETE FROM $table_name",
+      OBJECT
+    );
   }
 
   public static function update_standings($regio, $poule) {
