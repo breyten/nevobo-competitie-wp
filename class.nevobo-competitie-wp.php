@@ -308,7 +308,7 @@ class NevCom {
       OBJECT
     );
     $last_update = human_time_diff( $time_result[0]->updated_at, current_time('timestamp') ) . ' geleden';
-    $last_update_html = '<div class="row game-last-updated"><div class="col-xs-12"><strong>Bijgewerkt:</strong> '. $last_update .' </div></div>';
+    $last_update_html = '<!-- Nevcom Bijgewerkt: '. $last_update .' -->';
 
     $show_fields = array(
       "position" => "col-xs-1 col-sm-1 col-md-1 col-lg-1",
@@ -385,7 +385,7 @@ class NevCom {
       $when = 'future';
     }
 
-    $show_location = not array_key_exists('show_location', $attrs);
+    $show_location = !array_key_exists('show_location', $attrs);
 
     if ($when == 'future') {
       $where_clauses[] = 'DATE(`time`) >= DATE(NOW())';
@@ -419,7 +419,7 @@ class NevCom {
       OBJECT
     );
     $last_update = human_time_diff( $time_result[0]->updated_at, current_time('timestamp') ) . ' geleden';
-    $last_update_html = '<div class="row game-last-updated"><div class="col-xs-12"><strong>Bijgewerkt:</strong> '. $last_update .' </div></div>';
+    $last_update_html = '<!-- Nevom Bijgewerkt: '. $last_update .' -->';
 
     $old_date = '';
     $dtza = new DateTimeZone("Europe/Amsterdam");
