@@ -705,9 +705,10 @@ class NevCom {
           $wpdb->prepare("SELECT id FROM $table_name WHERE code = %s", $code)
         );
 
-	$game_date_time = $item->get_date( 'Y-m-d H:i:s' );
-	$game_unix_time = $item->get_date( 'U' );
-	if (empty($game_date_time)) {  // we're screwed
+	try {
+		$game_date_time = $item->get_date( 'Y-m-d H:i:s' );
+		$game_unix_time = $item->get_date( 'U' );
+	} catch ( TypeError $ex) {
 		$game_date_time = date('Y-m-d H:i:s');
 		$game_unix_time = date('U');
 	}
