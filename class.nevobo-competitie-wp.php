@@ -567,15 +567,18 @@ class NevCom {
     $feed->set_feed_url($feed_url);
     $feed->init();
 
-    $items = $feed->get_items();
-
+    try {
+    	$items = $feed->get_items();
+    } catch (TypeError $ex) {
+	    $items = [];
+    }
     $rankings = $feed->get_channel_tags('https://www.nevobo.nl/competitie/', 'ranking');
 
     $seq = 0;
     foreach($rankings as $ranking_raw) {
       $ranking = $ranking_raw['child']['https://www.nevobo.nl/competitie/'];
       $record = array(
-        'url' => $items[0]->get_link(),
+        'url' => $feed->get_link(),
         'updated_at' => current_time('timestamp'),
         'sequence' => $seq,
         'regio' => $regio,
