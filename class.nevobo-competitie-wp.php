@@ -113,7 +113,7 @@ class NevCom {
     dbDelta( $sql );
     dbDelta( $sql2 );
 
-    add_option( 'nevcom_db_version', USREF__DB_VERSION );
+    add_option( 'nevcom_db_version', NEVCOM__DB_VERSION);
 
     // add the cron job
     $timestamp = wp_next_scheduled( 'nevcom_get_program' );
