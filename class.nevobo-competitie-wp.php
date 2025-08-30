@@ -705,13 +705,19 @@ class NevCom {
           $wpdb->prepare("SELECT id FROM $table_name WHERE code = %s", $code)
         );
 
+	$game_date_time = $item->get_date( 'Y-m-d H:i:s' );
+	$game_unix_time = $item->get_date( 'U' );
+	if (empty($game_date_time)) {  // we're screwed
+		$game_date_time = date('Y-m-d H:i:s');
+		$game_unix_time = date('U');
+	}
         if ($existing) {
           $wpdb->update(
             $table_name,
             array(
-              'time' => $item->get_date( 'Y-m-d H:i:s' ),
-              'time_str' => $item->get_date( 'Y-m-d H:i:s' ),
-              'timestamp' => $item->get_date( 'U' ),
+              'time' => $game_date_time, 
+              'time_str' => $game_date_time, 
+              'timestamp' => $game_unix_time, 
               'url' => $item->get_link(),
               'code' => $code,
               'code_human' => $code,
@@ -734,9 +740,9 @@ class NevCom {
           $wpdb->replace(
             $table_name,
             array(
-              'time' => $item->get_date( 'Y-m-d H:i:s' ),
-              'time_str' => $item->get_date( 'Y-m-d H:i:s' ),
-              'timestamp' => $item->get_date( 'U' ),
+              'time' => $game_date_time, 
+              'time_str' => $game_date_time, 
+              'timestamp' => $game_unix_time, 
               'url' => $item->get_link(),
               'code' => $code,
               'code_human' => $code,
