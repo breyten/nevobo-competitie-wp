@@ -469,8 +469,8 @@ class NevCom {
     } else {
       list ($date, $title) = preg_split('/:\s+/', $item->get_title(), 2);
     }
-    list ($home, $away) = preg_split('/\s+-\s+/', $title, 2);
-    return array($home, $away);
+    preg_match('/(.*\s+[A-Z]+\s*\d+)\s+-\s+(.*\s+[A-Z]+\s*\d+)/', $title, $matches);
+    return array($matches[1], $matches[2]);
   }
 
   private static function _get_location($item) {
