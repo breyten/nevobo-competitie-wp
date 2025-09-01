@@ -640,8 +640,8 @@ class NevCom {
           $wpdb->replace(
             $table_name,
             array(
-              'time' => $item->get_date( 'Y-m-d H:i:s' ),
-              'time_str' => $item->get_date( 'Y-m-d H:i:s' ),
+              'time' => $item->get_date( 'Y-m-d H:i:s P' ),
+              'time_str' => $item->get_date( 'Y-m-d H:i:s P' ),
               'timestamp' => $item->get_date( 'U' ),
               'url' => $item->get_link(),
               'code' => $code,
@@ -709,19 +709,19 @@ class NevCom {
         );
 
 	try {
-		$game_date_time = $item->get_date( 'Y-m-d H:i:s' );
+		$game_date_time = $item->get_date( 'Y-m-d H:i:s P' );
 		$game_unix_time = $item->get_date( 'U' );
 	} catch ( TypeError $ex) {
-		$game_date_time = date('Y-m-d H:i:s');
+		$game_date_time = date('Y-m-d H:i:s P');
 		$game_unix_time = date('U');
 	}
         if ($existing) {
           $wpdb->update(
             $table_name,
             array(
-              'time' => $game_date_time, 
-              'time_str' => $game_date_time, 
-              'timestamp' => $game_unix_time, 
+              'time' => $game_date_time,
+              'time_str' => $game_date_time,
+              'timestamp' => $game_unix_time,
               'url' => $item->get_link(),
               'code' => $code,
               'code_human' => $code,
@@ -744,9 +744,9 @@ class NevCom {
           $wpdb->replace(
             $table_name,
             array(
-              'time' => $game_date_time, 
-              'time_str' => $game_date_time, 
-              'timestamp' => $game_unix_time, 
+              'time' => $game_date_time,
+              'time_str' => $game_date_time,
+              'timestamp' => $game_unix_time,
               'url' => $item->get_link(),
               'code' => $code,
               'code_human' => $code,
