@@ -145,63 +145,6 @@ class NevCom {
   public static function inject_styles_and_scripts() {
     $output = '
     <style type="text/css">
-    .rankings {
-    }
-    .rankings-header div {
-      font-weight: bold;
-      padding-bottom: 5px;
-    }
-    .rankings-info div {
-      padding-bottom: 5px;
-    }
-    .game-last-updated div {
-      margin-top: 10px;
-      text-align: right;
-    }
-    .game-header {
-      border-bottom: 1px solid #e7ecf1;
-    }
-    .game-header h3 {
-      margin-bottom: 20px;
-    }
-    .game-info {
-      border-bottom: 1px solid #e7ecf1;
-      display: flex;
-      align-items: center;
-    }
-    .game-info div, .game-header div {
-      padding-bottom: 0 !important;
-    }
-    /* Medium Devices, Desktops */
-    @media only screen and (max-width : 992px) {
-      .game-info {
-        flex-direction: column;
-        justify-content: center;
-      }
-      .game-info div {
-        text-align: center;
-      }
-    }
-    /* Small Devices, Tablets */
-    @media only screen and (max-width : 768px) {
-      .game-info {
-        flex-direction: row;
-      }
-    }
-    @media only screen and (max-width: 480px) {
-      .game-info {
-        flex-direction: column;
-        justify-content: center;
-      }
-      .game-info div {
-        text-align: center;
-      }
-    }
-    @media only screen and (min-width : 993px) {
-      .game-info {
-        flex-direction: row;
-      }
-    }
     </style>';
 
     $output .= '
@@ -385,7 +328,8 @@ class NevCom {
       $when = 'future';
     }
 
-    $show_location = !array_key_exists('show_location', $attrs);
+    $show_location = array_key_exists('show_location', $attrs);
+    $show_results = array_key_exists('show_results', $attrs);
 
     if ($when == 'future') {
       $where_clauses[] = 'DATE(`time`) >= DATE(NOW())';
@@ -412,7 +356,18 @@ class NevCom {
     );
 
     $output = array();
-    $output[] = '<div id="games-table games-'. $when .'">';
+    $output[] = '<div id="games-table games-'. $when .'" class="nevobofeed">';
+    $output[] = '<table class="nevobotable">';
+    $output[] = '<thead><tr>';
+    $output[] = '<th scope="col">Wanneer</th><th scope="col">Wedstrijden</th>';
+    if ($show_location) {
+      $output[] = '<th scope="col">Locatie</th>';
+    }
+    if ($show_results) {
+      $output[] = '<th scope="col">RUitslag</th>';
+    }
+    $output[] = '</tr></thead>';
+    $output[] = '<tbody>';
 
     $time_result = $wpdb->get_results(
       "SELECT * FROM $table_name ORDER BY `updated_at` DESC LIMIT 1",
@@ -431,33 +386,28 @@ class NevCom {
       $game_time_utc = new DateTime($result->time, $dtzu);
       $offset = $dtza->getOffset($game_time_utc);
       $game_time->add(new DateInterval('PT'. $offset .'S'));
-      if ($date != $old_date) {
-        $i18n_date = date_i18n('l j F Y', strtotime($date));
-        $output[] = '<div class="row game-header"><div class="col-xs-12"><h3>'. $i18n_date .'</h3></div></div>';
-        $old_date = $date;
-      }
-      $output[] = '<div class="row game-info">';
-      $output[] = '<div class="col-xs-12 col-md-1 col-lg-1">'. $game_time->format('H:i') .'</div>';
+      // if ($date != $old_date) {
+      //   $i18n_date = date_i18n('l j F Y', strtotime($date));
+      //   $output[] = '<div class="row game-header"><div class="col-xs-12"><h3>'. $i18n_date .'</h3></div></div>';
+      //   $old_date = $date;
+      // }
+      $output[] = '<tr>';
+      $output[] = '<td>'. $game_time->format('l j F H:i') .'</td>';
       $output[] = sprintf(
-        '<div class="col-xs-12 col-md-6 col-lg-6"><a href="%s" target="_blank">%s - %s</a></div>',
+        '<td><a href="%s" target="_blank">%s - %s</a></td>',
         $result->code_link, $result->home, $result->away
       );
       if ($show_location) {
-        $output[] = '<div class="col-xs-12 col-md-3 col-lg-3">'. $result->location .'</div>';
+        $output[] = '<td>'. $result->location .'</td>';
       }
-      # FIXME: something with results here ...
-      $output[] = '<div class="col-xs-12 col-md-2 col-lg-2">';
-      if ($result->sets_details) {
-        $output[] = '<abbr title="'. $result->sets_details .'">'. $result->sets_home .'-'. $result->sets_away .'</abbr>';
-      } else {
-        $output[] = '&nbsp;';
+      if ($show_results && $result->sets_details) {
+        $output[] = '<td><abbr title="'. $result->sets_details .'">'. $result->sets_home .'-'. $result->sets_away .'</abbr></td>';
       }
-      $output[] = '</div>';
-      $output[] = '</div>';
+      $output[] = '</tr>';
     }
 
     $output[] = $last_update_html;
-    $output[] = '</div>';
+    $output[] = '</tbody></table></div>';
 
     return implode("\n", $output);
   }
