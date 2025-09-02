@@ -329,6 +329,12 @@ class NevCom {
       $when = 'future';
     }
 
+    if (array_key_exists('limit', $attrs)) {
+      $limit = $attrs['limit'];
+    } else {
+      $limit = 6;
+    }
+
     $show_location = array_key_exists('show_location', $attrs);
     $show_results = array_key_exists('show_results', $attrs);
 
@@ -352,7 +358,7 @@ class NevCom {
     $where_sql = implode(' AND ', $where_clauses);
 
     $results = $wpdb->get_results(
-      "SELECT * FROM $table_name WHERE $where_sql ORDER BY `time`, `home`, `away`, `id` DESC",
+      "SELECT * FROM $table_name WHERE $where_sql ORDER BY `time`, `home`, `away`, `id` DESC LIMIT $limit",
       OBJECT
     );
 
@@ -365,7 +371,7 @@ class NevCom {
       $output[] = '<th scope="col">Locatie</th>';
     }
     if ($show_results) {
-      $output[] = '<th scope="col">RUitslag</th>';
+      $output[] = '<th scope="col">Uitslag</th>';
     }
     $output[] = '</tr></thead>';
     $output[] = '<tbody>';
@@ -393,7 +399,7 @@ class NevCom {
       //   $old_date = $date;
       // }
       $output[] = '<tr>';
-      $output[] = '<td>'. $game_time->format('l j F H:i') .'</td>';
+      $output[] = '<td>'. $game_time->format('j F H:i') .'</td>';
       $output[] = sprintf(
         '<td><a href="%s" target="_blank">%s - %s</a></td>',
         $result->code_link, $result->home, $result->away
