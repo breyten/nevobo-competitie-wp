@@ -239,7 +239,9 @@ class NevCom {
     );
 
     $output = array();
-    $output[] = '<div class="rankings-table">';
+    $output[] = '<div class="standings-table nevobofeed">';
+    $output[] = '<table class="nevobotable">';
+    $output[] = '<thead>';
 
     if ((count($results) > 0) && $show_header) {
       $poule_name = self::_poule_header($results[0]->regio, $results[0]->poule);
@@ -254,12 +256,12 @@ class NevCom {
     $last_update_html = '<!-- Nevcom Bijgewerkt: '. $last_update .' -->';
 
     $show_fields = array(
-      "position" => "col-xs-1 col-sm-1 col-md-1 col-lg-1",
-      "team" => "col-xs-9 col-sm-4 col-md-5 col-lg-5",
-      "games" => "col-xs-1 col-sm-1 col-md-1 col-lg-1 hidden-xs visible-sm-block visible-md-block visible-lg-block",
-      "points" => "col-xs-1 col-sm-1 col-md-1 col-lg-1",
-      "sets_won" => "col-xs-6 col-sm-1 col-md-1 col-lg-1 hidden-xs hidden-sm visible-md-block visible-lg-block",
-      "sets_lost" => "col-xs-6 col-sm-1 col-md-1 col-lg-1 hidden-xs hidden-sm visible-md-block visible-lg-block",
+      "position" => "",
+      "team" => "",
+      "games" => "",
+      "points" => "",
+      "sets_won" => "",
+      "sets_lost" => "",
     );
     $fields_headers = array(
       "position" => "#",
@@ -279,36 +281,35 @@ class NevCom {
     );
 
 
-    $output[] = '<div class="row rankings-header">';
+    $output[] = '<thead><tr>';
     foreach($show_fields as $field => $class_names) {
-      $output[] = "<div class=\"$class_names rankings-header-$field\"><span data-toggle=\"tooltip\" data-placement=\"top\" title=\"". $fields_tooltips[$field] ."\">". $fields_headers[$field] ."</span></div>";
+      $output[] = "<th scope=\"col\">". $fields_tooltips[$field] ."</th>";
     }
-    $output[] = '</div>';
+    $output[] = '</tr></thead>';
+    $output[] = '<tbody>';
 
     $prev_team = "";
     foreach($results as $result) {
       if (($prev_team != $result->team_id) && (substr($result->poule, 0, 2) != "NB")) {
-        $output[] = '<div class="row rankings-info" data-prev-team="'. $prev_team .'">';
+        $output[] = '<tr>';
         if (!$show_header) {
           $poule_size = $wpdb->get_results(
             "SELECT COUNT(*) AS `num_teams` FROM $table_name WHERE `regio` = \"". $result->regio ."\" AND `poule` = \"". $result->poule ."\" LIMIT 1",
             OBJECT
           );
-          $result->position = "<span data-toggle=\"tooltip\" data-placement=\"top\" title=\"van ". $poule_size[0]->num_teams ."\">".$result->position."</span>";
+          $result->position = "". $result->position ."/". $poule_size[0]->num_teams"";
           $result->team = '<a href="'. $result->url .'" target="_blank">'. $result->team .'</a>';
-          $result->sets_won  = "<span data-toggle=\"tooltip\" data-placement=\"top\" title=\"Punten: ". $result->points_won ."\">".$result->sets_won."</span>";
-          $result->sets_lost  = "<span data-toggle=\"tooltip\" data-placement=\"top\" title=\"Punten: ". $result->points_lost ."\">".$result->sets_lost."</span>";
         }
         foreach($show_fields as $field => $class_names) {
-          $output[] = "<div class=\"$class_names rankings rankings-$field\">". $result->$field ."</div>";
+          $output[] = "<td>". $result->$field ."</td>";
         }
-        $output[] = '</div>';
+        $output[] = '</tr>';
         $prev_team = $result->team_id;
       }
     }
 
     $output[] = $last_update_html;
-    $output[] = '</div>';
+    $output[] = '</tbody></table></div>';
 
     return implode("\n", $output);
 
