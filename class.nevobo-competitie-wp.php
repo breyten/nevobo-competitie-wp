@@ -297,7 +297,7 @@ class NevCom {
             "SELECT COUNT(*) AS `num_teams` FROM $table_name WHERE `regio` = \"". $result->regio ."\" AND `poule` = \"". $result->poule ."\" LIMIT 1",
             OBJECT
           );
-          $result->position = "". $result->position ."/". $poule_size[0]->num_teams"";
+          $result->position = "". $result->position ."/". $poule_size[0]->num_teams;
           $result->team = '<a href="'. $result->url .'" target="_blank">'. $result->team .'</a>';
         }
         foreach($show_fields as $field => $class_names) {
