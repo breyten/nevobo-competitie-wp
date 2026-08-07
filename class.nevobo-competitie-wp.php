@@ -202,7 +202,7 @@ class NevCom {
     for ($rankings as $ranking) {
       $output[] = '<tr>';
       foreach($show_fields as $field => $class_names) {
-        $output[] = "<td class=\"$class_names\">". $fields_tooltips[$field] ."</td>";
+        $output[] = "<td class=\"$class_names\">". $ranking[$field] ."</td>";
       }
       $output[] = '</tr>';
     }
