@@ -42,6 +42,7 @@ class NevCom {
     // filters/shortcodes
     add_shortcode('nevcom', array( 'NevCom', 'show_games' ));
     add_shortcode('nevcom-rankings', array( 'NevCom', 'show_rankings' ));
+    add_shortcode('sanexcup', array( 'NevCom', 'show_sanexcup' ));
   }
 
   private static function _table($basename = "nevcom") {
@@ -154,6 +155,17 @@ class NevCom {
     </script>';
 
     print $output;
+  }
+
+  public static function show_sanexcup($attrs, $content, $tag) {
+    // create the table
+    global $wpdb;
+
+    $table_name = self::_table('nevcom_standings');
+
+    $where_clauses = array();
+    $output = array();
+    return implode("\n", $output);
   }
 
   public static function show_rankings($attrs, $content, $tag) {
