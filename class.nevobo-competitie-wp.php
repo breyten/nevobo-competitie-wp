@@ -165,6 +165,48 @@ class NevCom {
 
     $where_clauses = array();
     $output = array();
+
+    $output[] = '<div class="standings-table nevobofeed">';
+    $output[] = '<table class="nevobotable">';
+    $output[] = '<thead>';
+
+    $show_fields = array(
+      "position" => "",
+      "team" => "",
+      "games" => "",
+      "for" => "",
+      "against" => "",
+      "percentage" => "",
+    );
+    $fields_headers = array(
+      "position" => "#",
+      "team" => "Team",
+      "games" => "G",
+      "for" => "4-0",
+      "against" => "0-4",
+      "percentage" => "Pct",
+    );
+    $fields_tooltips = array(
+      "position" => "Plek",
+      "team" => "Team",
+      "games" => "Wedstrijden gespeeld",
+      "for" => "4-0 Winst",
+      "against" => "0-4 Verlies",
+      "percentage" => "Percentage",
+    );
+
+
+    $output[] = '<thead><tr>';
+    foreach($show_fields as $field => $class_names) {
+      $output[] = "<th scope=\"col\">". $fields_tooltips[$field] ."</th>";
+    }
+    $output[] = '</tr></thead>';
+    $output[] = '<tbody>';
+
+    $output[] = '</tbody>';
+    $output[] = '</table>';
+    $output[] = '</div>';
+
     return implode("\n", $output);
   }
 
