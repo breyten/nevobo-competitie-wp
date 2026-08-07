@@ -271,7 +271,13 @@ class NevCom {
       $result[$game->away]['percentage'] = $result[$game->away]['for'] / $result[$game->away]['played'];
     }
 
-    return $result;
+    return self::filter_teams($result);
+  }
+
+  public static function filter_teams($teams) {
+    return array_filter($teams, function ($team) {
+      return str_contains($team, ' US ');
+    });
   }
 
   public static function show_rankings($attrs, $content, $tag) {
