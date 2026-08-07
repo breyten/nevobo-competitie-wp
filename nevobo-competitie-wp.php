@@ -3,7 +3,7 @@
 * Plugin Name: Nevobo Competitie
 * Plugin URI: http://www.volleybal.nl/competitie/
 * Description: Allows to view data from dutch volleyball competition
-* Version: 0.0.1
+* Version: 0.0.2
 * Author: Breyten Ernsting
 * Author URI: http://yerb.net/
 * License: MIT

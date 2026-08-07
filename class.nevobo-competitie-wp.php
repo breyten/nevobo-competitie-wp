@@ -221,6 +221,11 @@ class NevCom {
 
     $where_clauses = array();
 
+    $results = $wpdb->get_results(
+      "SELECT * FROM $table_name ORDER BY `time`, `home`, `away`, `id` ASC LIMIT $limit",
+      OBJECT
+    );
+
     $result = [];
     return $result;
   }
