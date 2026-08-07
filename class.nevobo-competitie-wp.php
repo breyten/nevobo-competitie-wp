@@ -221,12 +221,56 @@ class NevCom {
 
     $where_clauses = array();
 
-    $results = $wpdb->get_results(
+    $games = $wpdb->get_results(
       "SELECT * FROM $table_name ORDER BY `time`, `home`, `away`, `id` ASC LIMIT $limit",
       OBJECT
     );
 
     $result = [];
+
+    foreach($games as $game) {
+      if (!array_key_exists($game->home)) {
+        $result[$game->home] = array(
+          'position' => 0,
+          'team' => $game->home,
+          'played' => 0,
+          'for' => 0,
+          'against' => 0,
+          'percentage' => 0.0
+        );
+      }
+      if (!array_key_exists($game->away)) {
+        $result[$game->away] = array(
+          'position' => 0,
+          'team' => $game->away,
+          'played' => 0,
+          'for' => 0,
+          'against' => 0,
+          'percentage' => 0.0
+        );
+      }
+
+      // cup games do not count
+      if ($game->poule[0] == 'N') {
+        continue;
+      }
+
+      $result[$game->home]['played'] += 1;
+      $result[$game->away]['played'] += 1;
+
+      if ($game->result == "4-0") {
+        $result[$game->home]['for'] += 1;
+        $result[$game->away]['against'] += 1;
+      }
+      if ($game->result == "0-4") {
+        $result[$game->home]['against'] += 1;
+        $result[$game->away]['for'] += 1;
+      }
+
+      $result[$game->home]['percentage'] = $result[$game->home]['for'] / $result[$game->home]['played'];
+      $result[$game->away]['percentage'] = $result[$game->away]['for'] / $result[$game->away]['played'];
+    }
+
     return $result;
   }
 
