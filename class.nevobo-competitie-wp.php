@@ -158,12 +158,6 @@ class NevCom {
   }
 
   public static function show_sanexcup($attrs, $content, $tag) {
-    // create the table
-    global $wpdb;
-
-    $table_name = self::_table('nevcom_standings');
-
-    $where_clauses = array();
     $output = array();
 
     $output[] = '<div class="standings-table nevobofeed">';
@@ -203,11 +197,32 @@ class NevCom {
     $output[] = '</tr></thead>';
     $output[] = '<tbody>';
 
+    $rankings = self::make_sanexcup_ranking();
+
+    for ($rankings as $ranking) {
+      $output[] = '<tr>';
+      foreach($show_fields as $field => $class_names) {
+        $output[] = "<td class=\"$class_names\">". $fields_tooltips[$field] ."</td>";
+      }
+      $output[] = '</tr>';
+    }
     $output[] = '</tbody>';
     $output[] = '</table>';
     $output[] = '</div>';
 
     return implode("\n", $output);
+  }
+
+  public static function make_sanexcup_ranking() {
+    // create the table
+    global $wpdb;
+
+    $table_name = self::_table();
+
+    $where_clauses = array();
+
+    $result = [];
+    return $result;
   }
 
   public static function show_rankings($attrs, $content, $tag) {
