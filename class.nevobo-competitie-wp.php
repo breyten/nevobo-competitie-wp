@@ -276,7 +276,7 @@ class NevCom {
 
   public static function filter_teams($teams) {
     return array_filter($teams, function ($team) {
-      return str_contains($team, ' US ');
+      return str_contains($team->team, ' US ');
     });
   }
 
