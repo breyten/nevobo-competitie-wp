@@ -16,6 +16,14 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
+function sanex_sort($team1, $team2) {
+  if ($team1->for != $team2->for) {
+    return $team1->for - $team2->for;
+  } else {
+    return $team1->percentage - $team2->percentage;
+  }
+}
+
 class NevCom {
   private static $initiated = false;
   private static $following_clubs = array(
@@ -272,18 +280,34 @@ class NevCom {
       $result[$game->away]['percentage'] = $result[$game->away]['for'] / $result[$game->away]['played'];
     }
 
-    return self::filter_teams($result);
+    return self::sort_teams(self::filter_teams($result));
   }
 
   public static function filter_teams($teams) {
-    //return $teams;
     $result = [];
     foreach($teams as $team => $info) {
-      if (str_contains($team, ' US ') or str_contains($team, ' US ')) {
+      // TODO: could only start or end
+      if (str_contains($team, 'US ') or str_contains($team, 'US ')) {
         $result[$team] = $info;
       }
     }
     return $result;
+  }
+
+  public static function sort_teams($teams) {
+    $results = [];
+    foreach($teams as $team => $info) {
+      $results[] = $info;
+    }
+    usort($results, 'sanex_sort');
+    $sorted = [];
+    $i = 1;
+    foreach($results as $result) {
+      $sorted[$result['team']] = $teams[$result['team']];
+      $sorted[$result['team']]['position'] = $i;
+      $i++;
+    }
+    return $sorted;
   }
 
   public static function show_rankings($attrs, $content, $tag) {
