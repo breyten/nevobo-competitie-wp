@@ -167,7 +167,7 @@ class NevCom {
     $show_fields = array(
       "position" => "",
       "team" => "",
-      "games" => "",
+      "played" => "",
       "for" => "",
       "against" => "",
       "percentage" => "",
@@ -259,11 +259,11 @@ class NevCom {
       $result[$game->home]['played'] += 1;
       $result[$game->away]['played'] += 1;
 
-      if ($game->sets_home == 4) {
+      if ($game->sets_home == 4 and $game->sets_away == 0) {
         $result[$game->home]['for'] += 1;
         $result[$game->away]['against'] += 1;
       }
-      if ($game->sets_away == 4) {
+      if ($game->sets_home == 0 and $game->sets_away == 4) {
         $result[$game->home]['against'] += 1;
         $result[$game->away]['for'] += 1;
       }
