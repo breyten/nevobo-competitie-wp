@@ -199,7 +199,9 @@ class NevCom {
 
     $rankings = self::make_sanexcup_ranking();
 
-    for ($rankings as $ranking) {
+    $output[] = "<!-- ". count($rankings) ." -->";
+
+    foreach ($rankings as $ranking) {
       $output[] = '<tr>';
       foreach($show_fields as $field => $class_names) {
         $output[] = "<td class=\"$class_names\">". $ranking[$field] ."</td>";
@@ -222,14 +224,13 @@ class NevCom {
     $where_clauses = array();
 
     $games = $wpdb->get_results(
-      "SELECT * FROM $table_name ORDER BY `time`, `home`, `away`, `id` ASC LIMIT $limit",
+      "SELECT * FROM $table_name WHERE `home` IS NOT NULL OR `away` IS NOT NULL ORDER BY `time`, `home`, `away`, `id` ASC",
       OBJECT
     );
-
     $result = [];
 
     foreach($games as $game) {
-      if (!array_key_exists($game->home)) {
+      if (!array_key_exists($game->home, $result)) {
         $result[$game->home] = array(
           'position' => 0,
           'team' => $game->home,
@@ -239,7 +240,7 @@ class NevCom {
           'percentage' => 0.0
         );
       }
-      if (!array_key_exists($game->away)) {
+      if (!array_key_exists($game->away, $result)) {
         $result[$game->away] = array(
           'position' => 0,
           'team' => $game->away,
@@ -258,11 +259,11 @@ class NevCom {
       $result[$game->home]['played'] += 1;
       $result[$game->away]['played'] += 1;
 
-      if ($game->result == "4-0") {
+      if ($game->sets_home == 4) {
         $result[$game->home]['for'] += 1;
         $result[$game->away]['against'] += 1;
       }
-      if ($game->result == "0-4") {
+      if ($game->sets_away == 4) {
         $result[$game->home]['against'] += 1;
         $result[$game->away]['for'] += 1;
       }
@@ -275,9 +276,14 @@ class NevCom {
   }
 
   public static function filter_teams($teams) {
-    return array_filter($teams, function ($team) {
-      return str_contains($team->team, ' US ');
-    });
+    //return $teams;
+    $result = [];
+    foreach($teams as $team => $info) {
+      if (str_contains($team, ' US ') or str_contains($team, ' US ')) {
+        $result[$team] = $info;
+      }
+    }
+    return $result;
   }
 
   public static function show_rankings($attrs, $content, $tag) {
