@@ -193,7 +193,7 @@ class NevCom {
     $fields_headers = array(
       "position" => "#",
       "team" => "Team",
-      "games" => "G",
+      "played" => "G",
       "for" => "4-0",
       "against" => "0-4",
       "percentage" => "Pct",
@@ -201,7 +201,7 @@ class NevCom {
     $fields_tooltips = array(
       "position" => "Plek",
       "team" => "Team",
-      "games" => "Wedstrijden gespeeld",
+      "played" => "Wedstrijden gespeeld",
       "for" => "4-0 Winst",
       "against" => "0-4 Verlies",
       "percentage" => "Percentage",
@@ -221,6 +221,7 @@ class NevCom {
 
     foreach ($rankings as $position => $ranking) {
       $ranking['position'] = $position + 1;
+      $ranking['percentage'] = number_format($ranking['percentage'] * 100, 2);
       $output[] = '<tr>';
       foreach($show_fields as $field => $class_names) {
         $output[] = "<td class=\"$class_names\">". $ranking[$field] ."</td>";
