@@ -17,10 +17,20 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
 function sanex_sort($team1, $team2) {
-  if ($team1->for != $team2->for) {
-    return $team1->for - $team2->for;
+  if ($team1['for'] != $team2['for']) {
+    return $team2['for'] - $team1['for'];
+  } elseif ($team1['percentage'] != $team2['percentage']) {
+    return $team2['percentage'] - $team2['percentage'];
+  } elseif ($team1['against'] != $team2['against']) {
+    return $team1['against'] - $team2['against'];
+  } elseif (str_contains($team2['team'], ' DS') != str_contains($team1['team'], ' DS')) {
+    if (str_contains($team2['team'], ' DS')) {
+      return 1;
+    } else {
+      return -1;
+    }
   } else {
-    return $team1->percentage - $team2->percentage;
+    return $team1['played'] - $team2['played'];
   }
 }
 
@@ -209,7 +219,8 @@ class NevCom {
 
     $output[] = "<!-- ". count($rankings) ." -->";
 
-    foreach ($rankings as $ranking) {
+    foreach ($rankings as $position => $ranking) {
+      $ranking['position'] = $position + 1;
       $output[] = '<tr>';
       foreach($show_fields as $field => $class_names) {
         $output[] = "<td class=\"$class_names\">". $ranking[$field] ."</td>";
@@ -300,14 +311,7 @@ class NevCom {
       $results[] = $info;
     }
     usort($results, 'sanex_sort');
-    $sorted = [];
-    $i = 1;
-    foreach($results as $result) {
-      $sorted[$result['team']] = $teams[$result['team']];
-      $sorted[$result['team']]['position'] = $i;
-      $i++;
-    }
-    return $sorted;
+    return $results;
   }
 
   public static function show_rankings($attrs, $content, $tag) {
