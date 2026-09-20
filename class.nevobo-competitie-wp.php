@@ -254,7 +254,7 @@ class NevCom {
     $where_clauses = array();
 
     $games = $wpdb->get_results(
-      "SELECT * FROM $table_name WHERE `home` IS NOT NULL OR `away` IS NOT NULL ORDER BY `time`, `home`, `away`, `id` ASC",
+      "SELECT * FROM $table_name WHERE (`home` IS NOT NULL OR `away` IS NOT NULL)  AND sets_home IS NOT NULL AND sets_away IS NOT NULL ORDER BY `time`, `home`, `away`, `id` ASC",
       OBJECT
     );
     $result = [];
