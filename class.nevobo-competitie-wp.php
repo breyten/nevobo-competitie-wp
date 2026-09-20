@@ -19,10 +19,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 function sanex_sort($team1, $team2) {
   if ($team1['for'] != $team2['for']) {
     return $team2['for'] - $team1['for'];
-  } elseif ($team1['percentage'] != $team2['percentage']) {
-    return $team2['percentage'] - $team2['percentage'];
+  } elseif ($team1['percentage'] > $team2['percentage']) {
+    return -1;
+  } elseif ($team1['percentage'] < $team2['percentage']) {
+    return 1;
   } elseif ($team1['against'] != $team2['against']) {
-    return $team1['against'] - $team2['against'];
+    return $team2['against'] - $team1['against'];
   } elseif (str_contains($team2['team'], ' DS') != str_contains($team1['team'], ' DS')) {
     if (str_contains($team2['team'], ' DS')) {
       return 1;
