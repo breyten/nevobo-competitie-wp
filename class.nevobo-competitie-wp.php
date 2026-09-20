@@ -618,9 +618,8 @@ class NevCom {
 
   private static function _get_regio_and_poule($item) {
     list($code_full, $dummy) = preg_split('/,\s+Datum:/', $item->get_description(), 2);
-    $code = str_replace('Wedstrijd: ', '', $code_full);
     $matches = array();
-    if (preg_match('/^(\d{4})([\d\w]+)\s/', $code, $matches)) {
+    if (preg_match('/^Wedstrijd:\s*(\d{4})([\d\w]+)\s/', $code_full, $matches)) {
       array_shift($matches);
       return $matches;
     } else {
