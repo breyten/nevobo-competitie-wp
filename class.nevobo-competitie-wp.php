@@ -187,6 +187,11 @@ class NevCom {
     $output[] = '<table class="nevobotable">';
     $output[] = '<thead>';
 
+    $what = $attrs['type'];
+    if ($what == '') {
+      $what = 'senior';
+    }
+
     $show_fields = array(
       "position" => "number",
       "team" => "",
@@ -220,7 +225,7 @@ class NevCom {
     $output[] = '</tr></thead>';
     $output[] = '<tbody>';
 
-    $rankings = self::make_sanexcup_ranking();
+    $rankings = self::make_sanexcup_ranking($what);
 
     $output[] = "<!-- ". count($rankings) ." -->";
 
@@ -240,7 +245,7 @@ class NevCom {
     return implode("\n", $output);
   }
 
-  public static function make_sanexcup_ranking() {
+  public static function make_sanexcup_ranking($what) {
     // create the table
     global $wpdb;
 
@@ -297,14 +302,18 @@ class NevCom {
       $result[$game->away]['percentage'] = $result[$game->away]['for'] / $result[$game->away]['played'];
     }
 
-    return self::sort_teams(self::filter_teams($result));
+    return self::sort_teams(self::filter_teams($result, $what));
   }
 
-  public static function filter_teams($teams) {
+  public static function filter_teams($teams, $what) {
+    if ($what == 'senior') {
+      $regex = '/US\s*(H|D)S\s*\d+/';
+    } else {
+      $regex = '/US\s*(J|M|X)(A|B|C)\s*\d+/';
+    }
     $result = [];
     foreach($teams as $team => $info) {
-      // TODO: could only start or end
-      if (str_contains($team, 'US ') or str_contains($team, 'US ')) {
+      if (preg_match($regex, $team)) {
         $result[$team] = $info;
       }
     }
