@@ -785,11 +785,12 @@ class NevCom {
             )
           );
 
-          $existing = $wpdb->get_row(
-            $wpdb->prepare("SELECT id FROM $table_name WHERE url = %s", $item->get_link())
-          );
         }
       }
+
+      $existing = $wpdb->get_row(
+        $wpdb->prepare("SELECT id, regio, poule, location FROM $table_name WHERE url = %s", $item->get_link())
+      );
 
       $matches = array();
       if ($existing && preg_match('/,\s+Uitslag:\s+(\d+)\-(\d+)$/', $item->get_title(), $matches)) {
