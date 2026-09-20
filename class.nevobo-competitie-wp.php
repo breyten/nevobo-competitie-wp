@@ -166,6 +166,9 @@ class NevCom {
   public static function inject_styles_and_scripts() {
     $output = '
     <style type="text/css">
+    .standings-sanex-table td.number {
+      text-align: right;
+    }
     </style>';
 
     $output .= '
@@ -180,17 +183,17 @@ class NevCom {
   public static function show_sanexcup($attrs, $content, $tag) {
     $output = array();
 
-    $output[] = '<div class="standings-table nevobofeed">';
+    $output[] = '<div class="standings-sanex-table nevobofeed">';
     $output[] = '<table class="nevobotable">';
     $output[] = '<thead>';
 
     $show_fields = array(
-      "position" => "",
+      "position" => "number",
       "team" => "",
-      "played" => "",
-      "for" => "",
-      "against" => "",
-      "percentage" => "",
+      "played" => "number",
+      "for" => "number",
+      "against" => "number",
+      "percentage" => "number",
     );
     $fields_headers = array(
       "position" => "#",
@@ -203,9 +206,9 @@ class NevCom {
     $fields_tooltips = array(
       "position" => "Plek",
       "team" => "Team",
-      "played" => "Wedstrijden gespeeld",
-      "for" => "4-0 Winst",
-      "against" => "0-4 Verlies",
+      "played" => "Wedstrijden",
+      "for" => "4-0",
+      "against" => "0-4",
       "percentage" => "Percentage",
     );
 
